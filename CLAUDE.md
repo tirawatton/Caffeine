@@ -51,6 +51,7 @@ Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> Exit loop
 | `📱 Screen 4 — Statistics & Reports` | Spending / Cash flow / Net worth views, Insight sheet; v1 archived alongside |
 | `📱 Screen 5 — Subscriptions & Installments` | Fixed-costs dashboard: Subscriptions view, Installments view |
 | `📱 Screen 6 — Sync, Devices & Widgets` | Sync & devices modal, sync-state reference, Home Screen widgets |
+| `📱 Onboarding & Login` | 4-screen flow: Safe to Spend, E-Slip & AI, Household & Assets, Login & Security (prototype flow "Onboarding"). Screens 1–3 are the UI-first redesign (Pinterest-inspired: 2-line headline, 1-line description, benefit pill, large UI vignette — ring / stacked slip card / household orbit); the old text-heavy versions were deleted. Login & Security still uses Thai lines in Noto Sans Thai (not a text style). DM Mono has no ฿ glyph, so baht amounts use Inter styles. DS additions: `Page indicator`, `icon/lock`, `icon/utensils` |
 | `🧭 Concept coverage — Next-gen features` | One-page map of the 6 next-gen features → screens/components |
 
 ## Design System — key tokens
