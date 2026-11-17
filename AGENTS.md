@@ -47,7 +47,7 @@ Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> Exit loop
 | `🔎 Research — Expense vs Income` | Moodboard / inspiration board |
 | `📱 Screen 1 — Dashboard` | Dashboard & Transactions, Household ledger (shared) |
 | `📱 Screen 2 — Add Transaction` | Add transaction (keypad + details), Scan slip camera, Review slip |
-| `📱 Screen 3 — Accounts & Wallet` | Wallet (cards), Household wallet (shared) |
+| `📱 Screen 3 — Accounts & Wallet` | **Wallet v1.1** (Multi-Wallet spec 1.1, row at y=0): A Carousel · Personal `116:1039`, C Carousel · All Wallets (Combined) `117:1596`; sheets at y=2100: D Choose a wallet `119:1658`, E Add / Manage accounts `119:1838`, F Account `…` menu `119:1993`, G Hide from Wallet confirm `119:2207`, H Exclude from Net Worth confirm `119:2334`; States board `120:2785` (y=3100) (loading, empty Space, offline/stale, card × CTA states, empty filter, pagination); Notes `121:3252` (behaviour & handoff). Frame B (Grid view) was removed at Ton's request — grid mode has no screen frame now (Account tile component and grid toggle remain). The old v1 frames (main screen, full scroll, card edit menu, behaviour notes) were deleted at Ton's request — only v1.1 remains. Household wallet (shared) `86:868` kept unchanged, renamed "Screen 3 — Household wallet (shared, full scroll)" and moved to x=1576, y=0 beside the v1.1 row |
 | `📱 Screen 4 — Statistics & Reports` | Spending / Cash flow / Net worth views, Insight sheet; v1 archived alongside |
 | `📱 Screen 5 — Subscriptions & Installments` | Fixed-costs dashboard: Subscriptions view, Installments view |
 | `📱 Screen 6 — Sync, Devices & Widgets` | Sync & devices modal, sync-state reference, Home Screen widgets |
@@ -59,7 +59,7 @@ Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> Exit loop
 **Variable collections:**
 - `Caffeine / Primitives` — raw color values
 - `Caffeine / Night` — semantic colors: `bg`, `surface`, `surface-raised`, `pill`, `primary` (periwinkle), `accent` (coral), `income` (mint), `text-primary`, `text-secondary`, `text-on-light`, `tint-mustard`, `tint-mint`, `tint-lilac`, `tint-coral`, `tint-sky`, `glass-light`, `glass-stroke`, `glass-stroke-dark`, `glass-dark`
-- `Caffeine / Dimensions` — `space/0,8,16,24,32`; `radius/sm,md,lg,xl,full`
+- `Caffeine / Dimensions` — `space/0,8,16,24,32` (plus 40, 48, 64); `radius/sm,md,lg,xl,full`; layout tokens `layout/tab-bar-inset` = 128 (scroll content bottom padding: tab bar 64 + bottom offset 40 + section gap 24) and `layout/row-divider-inset` = 72 (ledger divider leading inset)
 
 **Hex reference:** charcoal `#1C1C1E`/`#2A2A2C`/`#3A3A3C`, paper `#F4F3EE`, periwinkle `#8C88F8`, coral `#FF6A4D`, mint `#9EE6C4`, mustard `#F5C85A`, lilac `#C8C6FF`, coral-tint `#FFB3A1`, sky `#BDE3EE`, grey `#A1A1A6`.
 
@@ -68,6 +68,8 @@ Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> Exit loop
 **Effect styles:** `Elevation/Floating`, `Material/Glass`, `Material/Glass Floating`.
 
 **Core components:** Filter chip, Date header, Transaction row (+ optional "Paid by" household marker), Tab bar (Collapsed/Expanded), Avatar, Icon button, Dropdown pill, Badge, Search field, Segment / Segmented control, Stat tile, Key, Button, Picker tile, Meta chip, Favorite chip, Tag, Attachment tile, Switch, Text area, Wallet card (Credit/Bank/Cash), Legend row, Budget row (v1, archived), Alert banner, Category budget row (OK/Warning/Over/No budget), Account summary row.
+
+**Wallet components** (frame "Components — Wallet" `114:532` on the Design System page; renamed from "Components — Wallet v1.1" once the v1 Wallet screens were deleted, along with its title and the "Icons — Wallet" group): **Account card** `114:615` (Active = periwinkle / Inactive = surface-raised; padding 24 all sides; `…` has a 48pt hit area pinned absolute top-right so the 32pt circle aligns to the padding; toggles for space badge, status pill, pin, usage bar, meta tiles, footer), **Account tile** `114:668` (grid Bento tile, padding 16, same `…` treatment, icon swap), **Account pager** `114:689` (`n / total` with 48pt prev/next), **Sheet row** `118:568` (Default/Destructive). **Card face refactor:** Account card now has a `Type` axis — `Type=Detailed` (the original 338×302 layout) and `Type=Card face` (`133:1040` Active / `133:1080` Inactive): a physical-credit-card look at 338×208 with chip, masked PAN (`Card number` prop, Data/Mono Subhead), `Network` (VISA), statement balance bottom-left, `VALID THRU` + `Expiry` bottom-right, and two concentric `tint-lilac` rings bottom-right. The details that no longer fit (due-status pill, usage bar, Available credit / Payment due tiles, cut-off footer) moved into the **Card details strip** component `134:562`, placed under the `Account pager` (`1 / 6` in A, `1 / 11` in C). Card face is used for credit cards only, and only in frames A and C. Bank/Cash cards and frames D–H plus the States board still use `Type=Detailed`. Icons: `cardPlus` (Manage accounts = `card.badge.plus`, plus drawn as a corner badge), `grid`, `carousel`, `pin`, `eyeOff`, `minusCircle`, `pencil`, `trash`, `cloudOff`, `archive`. The old Wallet card is renamed **Wallet card (legacy)** `71:525`, with a component description saying it is used only by the Household wallet frame; new wallet screens use Account card.
 
 **"Next-gen features" components** (added for the concept redesign): **Insight card** (AI nudge), **Sync status** (Synced/Syncing/Offline), **Member** (household avatar marker), **Auto-fill row** (Slip/AI source tags), **Subscription row**, **Installment row**.
 
@@ -115,6 +117,14 @@ A full mapping lives on the Figma page **🧭 Concept coverage — Next-gen feat
 - **Placeholders:** camera feed (Screen 2C) and widget wallpaper (Screen 6B) are flat gradients, not real screenshots; Member initials render at 10pt, below the documented type scale.
 - **Sample data:** all amounts, dates, and names across the new/updated frames are invented for illustration.
 - **Audit coverage:** the newly created frames (Screens 2C/2D, 3 Household, 4 Insight sheet, 5, 6, and the Design System additions) were checked for 16px margins, 8pt spacing, text styles, and token bindings — all clean except one unbound fill (fixed). The in-place edits to the original Screen 1 frames and the new Screen 1 Household frame were **not** re-audited.
+- **Wallet v1.1 (Screen 3):**
+  - Theme: Ton chose "Night, spec mapped" over the spec's light Bento theme. The spec's solid-black active card is the periwinkle Account card; inactive cards are surface-raised; the spec's red alert is coral with an icon and text.
+  - Not designed (entry points only): Net Worth detail, Add account, Manage accounts list, payment flow. The 1-account state is a text note, not a screen.
+  - Icon tint: icons swapped inside instances keep per-instance color overrides; swapping an icon resets them, so handle icon tint in code.
+  - The disabled CTA (offline) is shown at 40% opacity, not as a component state.
+  - The carousel's next card deliberately bleeds to the screen edge as a peek.
+  - Card face is 338×208 (1.625:1). That is about 2.5% off the ISO card ratio (1.586:1, which would be 338×213) so that padding and gaps stay on the 8pt grid. The peek cards (`116:1247`, `117:1629`, still `Type=Detailed`) are fixed at 208 tall with clipping on, so their own 24pt corners match the active card. Content below 208, such as the meta tiles, is hidden. In code, the peek should be the next card at full height. Frames A and C are 70pt taller because of the details strip. The VISA mark is plain `iOS/Headline` text, not a brand logo asset. The rings use paint opacity on `tint-lilac` (14%), and that opacity is not a token.
+  - SwiftUI hand-off (`ios-swiftui-design`) is paused: still need Ton's choice of output (Swift files vs guidance) and the minimum iOS version.
 - Earlier in the project: a stale "Screen 1 — 8pt Grid Fixes" spreadsheet exists from an older pass and has not been updated to match the current card; two retired v1 Screen 4 components (two-ring donut, Legend row, Budget row) remain in the Design System unused by current screens. Tab bar order is Home, Wallet, Analytics, Profile (Wallet tab layer renamed from the old "Budgets" name).
 
 ## Deliverables produced this session
