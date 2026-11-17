@@ -46,7 +46,7 @@ Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> Exit loop
 | `🎨 Design System` | Components, Foundations (variables/styles), Patterns |
 | `🔎 Research — Expense vs Income` | Moodboard / inspiration board |
 | `📱 Screen 1 — Dashboard` | Dashboard & Transactions, Household ledger (shared) |
-| `📱 Screen 2 — Add Transaction` | Add transaction (keypad + details), Scan slip camera, Review slip |
+| `📱 Screen 2 — Add Transaction` | **Add Transaction spec v1.1** (row at y=0, all frames top-aligned with 80px gaps, Night theme, spec mapped): 2A Keypad · Expense · Personal `144:897`, 2A Keypad · Transfer · Card payment `144:952`, 2B Details · Credit card + Installment (full scroll) `144:1007`, 2B Details · Family split (full scroll) `144:1065`, 2C Scan slip · Scanning `144:1123`, 2C Scan slip · Error `144:1156`, 2D Review slip · Personal `144:1189`, 2D Review slip · Family `144:1232`, States & notes board `144:1275` (Smart Banner P2, To-account picker same-account guard, behaviour notes). The v1 frames (2A, 2B, 2C, 2D, Behaviour notes) were kept in a second row at y=2160 (same 80px gaps, order 2A · 2B · 2C · 2D · notes) and renamed "v1 — before review · …" |
 | `📱 Screen 3 — Accounts & Wallet` | **Wallet** (Multi-Wallet spec 1.1; frames named "Wallet — A …" to "Wallet — I …", "v1.1" dropped from names once v1 was deleted; row at y=0): A Carousel · Personal `116:1039`, C Carousel · All Wallets (Combined) `117:1596`; sheets at y=2100: D Choose a wallet `119:1658`, E Add / Manage accounts `119:1838`, F Account `…` menu `119:1993`, G Hide from Wallet confirm `119:2207`, H Exclude from Net Worth confirm `119:2334`; States board `120:2785` (y=3100) (loading, empty Space, offline/stale, card × CTA states, empty filter, pagination); Notes `121:3252` (behaviour & handoff). Frame B (Grid view) was removed at Ton's request — grid mode has no screen frame now (Account tile component and grid toggle remain). The old v1 frames (main screen, full scroll, card edit menu, behaviour notes) were deleted at Ton's request — only v1.1 remains. Household wallet (shared) `86:868` kept unchanged, renamed "Screen 3 — Household wallet (shared, full scroll)" and moved to x=1576, y=0 beside the v1.1 row |
 | `📱 Screen 4 — Statistics & Reports` | Spending / Cash flow / Net worth views, Insight sheet; v1 archived alongside |
 | `📱 Screen 5 — Subscriptions & Installments` | Fixed-costs dashboard: Subscriptions view, Installments view |
@@ -79,14 +79,14 @@ The brief asked the app to move from a legacy local-DB tracker to a next-gen app
 
 1. **Automated E-Slip Processing** (Vision framework QR scan of Thai bank slips)
    - Screen 1 quick-add: **Scan slip** action.
-   - Screen 2A: Scan slip chip.
-   - Screen 2C (new): camera view with QR viewfinder lock-on.
-   - Screen 2D (new): review screen — amount/date/recipient auto-filled, each tagged **"From slip"**, with a **"Not bank-verified"** badge (placeholder for a future bank verification API).
+   - Screen 2A: Scan slip button next to Save in the bottom dock, in the thumb zone (v1.1; it was a chip in v1).
+   - Screen 2C: camera view with the QR viewfinder. v1.1 has a Scanning state and an Error state (Try again / Select from Photos / Enter manually) with the copy "QR code is processed on-device".
+   - Screen 2D: review screen. Amount, date and recipient are tagged **"From slip"**; category and account are tagged **"Suggested"**. The verification badge reads **"QR parsed (local)"**, and "Bank verified" with a check appears only after a bank API confirms. Only Expense and Transfer types are offered.
 
 2. **Shared Household Wallets**
    - Screen 1: **Household ledger** frame — every row shows who paid (Member marker).
    - Screen 3: **Household wallet** frame — joint account card, "who paid this month" split, settle-up, shared installment plan.
-   - Screen 2D: wallet + payer picker.
+   - Screen 2B (Family): Paid by + Split (50/50 / Custom / 100% shared). Screen 2D (Family): a "Household wallet · Paid by You · Split 50/50" summary card pinned above Save. Both are hidden in the Personal space.
 
 3. **Cloud-Native Architecture & Cross-Platform Sync** (Firebase/Supabase-style)
    - Dashboard header: wallet switcher + "Synced" state.
@@ -117,6 +117,17 @@ A full mapping lives on the Figma page **🧭 Concept coverage — Next-gen feat
 - **Placeholders:** camera feed (Screen 2C) and widget wallpaper (Screen 6B) are flat gradients, not real screenshots; Member initials render at 10pt, below the documented type scale.
 - **Sample data:** all amounts, dates, and names across the new/updated frames are invented for illustration.
 - **Audit coverage:** the newly created frames (Screens 2C/2D, 3 Household, 4 Insight sheet, 5, 6, and the Design System additions) were checked for 16px margins, 8pt spacing, text styles, and token bindings — all clean except one unbound fill (fixed). The in-place edits to the original Screen 1 frames and the new Screen 1 Household frame were **not** re-audited.
+- **Add Transaction v1.1 (Screen 2):**
+  - Theme: Ton chose "Night, spec mapped" over the spec's light Bento theme. The spec's black hero is the periwinkle Entry card, and the black Save is the coral Primary Button. The spec's red errors are coral with an icon and text.
+  - The spec's referenced screenshot was not attached; the frames were built from the spec text and the v1 frames.
+  - Scan slip moved from the detail-chip row into the bottom dock next to Save, for thumb reach. The chip row keeps only Today and Memo. In the Actions row, Scan slip hugs its content (about 151pt, QR icon + label). Save fills the rest (about 211pt). Both use the Button's default 24pt side padding. Ton reviewed equal-width and 1:3 / 2:3 splits and chose to keep this one.
+  - Every type-specific frame (2A, 2B, 2D) has a Space switcher (Dropdown pill) beside THB in the hero. 2A Transfer replaces the eyebrow with a `CARD PAYMENT` Badge and uses the expression line for "Statement due 25 Nov".
+  - 2D hides the hero From/Category tiles so the same field isn't shown twice. Account and Category appear as `Suggested` Auto-fill rows.
+  - The 2B frames are full-scroll references. In the real 874pt viewport, Save stays pinned 40pt from the bottom. The 2A gap between the content and the keypad (26pt) stretches with device height and is not a token.
+  - The Installment / Family split cards, the in-card selectors (cloned Type selector on `night/bg`), and the Smart Banner are local frames, not DS components yet.
+  - The detail chips and the Space pill are 40pt tall, inherited from the DS; in code, extend the hit area to 44pt.
+  - Layout fixes (after review): the 2A Favorites row is a 370pt horizontal scroller that clips at the 16pt margin, so it no longer overflows Content. The hero Entry card padding is `space/24` on all four sides, and the Amount block inside it has 0 padding, so the content is centered (this matches the Wallet Account card). Because the tiles are narrower, the credit card tile reads "KTC Visa". The Actions-row buttons are a fixed 56pt (not Fill inside a Hug row). Hidden leftover layers were removed (the 2A Transfer eyebrow and the 2C Error title). Uneven padding is kept on purpose only for: divider insets (48 left), pills with a leading circle (the toast, the Favorite chip: 8 left / 16 right), and the Tag pill with a trailing × (16 left / 8 right). The 2A keypad → Save gap is 8, matching the key gaps. 2C/2D pinned elements use bottom constraints (sheet and summary = Stretch/Bottom, toast = Center/Bottom, slip and viewfinder = Center/Center). The 2B frames are sized so the content ends exactly 24pt above Save.
+  - All sample data (KTC Visa ··4821, Makro, Ploy, amounts) is invented.
 - **Wallet v1.1 (Screen 3):**
   - Theme: Ton chose "Night, spec mapped" over the spec's light Bento theme. The spec's solid-black active card is the periwinkle Account card; inactive cards are surface-raised; the spec's red alert is coral with an icon and text.
   - Not designed (entry points only): Net Worth detail, Add account, Manage accounts list, payment flow. The 1-account state is a text note, not a screen.
