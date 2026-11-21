@@ -2,18 +2,22 @@
 
 Author: `ba` · 2026-11-21 · Platform scope: **Both** · Priority: **Must** · Release: V1.0 (foundation, built first)
 Brief source: Ton's master-plan request of 2026-11-21 (main session) and `docs/plan/caffeine-app-master-plan.md` §E00. There is no `docs/briefs/foundation-brief.md` yet. Ton owns briefs; the conductor can write one from §1–§2 below for Ton to confirm.
-Decisions applied: `docs/decisions/2026-11-21-ton-answers.md`, covering Q-16 rounding (T-18, T-19), Q-04 splash / shield (T-20 to T-22) and Q-30 split storage (T-02, T-09). Release: part of **V1.0**.
+Decisions applied: `docs/decisions/2026-11-21-ton-answers.md`, covering Q-16 rounding (T-18, T-19), Q-04 splash / shield (T-20 to T-22) and Q-30 split storage (T-02, T-09). Since revision 3 also the v5.1 audit fix pass recorded in CLAUDE.md ("v5.1 — UX/UI audit fix pass (21 Nov 2026)") and `docs/design/tokens-changelog.md`: budget cycle = payday, new and changed tokens. Release: part of **V1.0**.
 
-## Readiness checklist (revision 2, after Ton's decisions; Verify pass 2 of 3)
+## Readiness checklist (revision 4, after Ton's second-round answers; Verify pass 1 of 3)
 1. PASS: every task (T-01 to T-22) has all 8 fields.
 2. PASS: every AC is Given / When / Then with concrete values and no vague words.
 3. PASS: every task has at least one error or edge AC (marked *edge*).
-4. PASS: every flow branch (F1 to F11) is referenced by at least one AC (see the table after the flow).
+4. PASS: every flow branch (F1 to F14) is referenced by at least one AC (see the table after the flow).
 5. PASS: no dependency cycles and no duplicate tasks (order: T-01, T-02 → T-03, T-04 → T-05 … T-17).
-6. PASS: every number agrees with `caffeine-domain` (half-up rounding, signed amounts, transfers excluded, pace status with `<=`, elapsed includes today, device timezone).
+6. PASS: every number agrees with `caffeine-domain` and Ton Q-16 (half-up rounding, signed amounts, transfers excluded, pace status with `<=`, elapsed includes today, device timezone, per day counts today: ฿921 = floor(6,450 / 7) in the payday cycle 25 Oct–24 Nov on 18 Nov, not Figma's ฿1,075).
 7. PASS: every screen state maps to a v5.1 frame or is listed as a Design gap (DG-01, DG-22, DG-23, DG-26).
 8. PASS: Analytics says "N/A — no KPI".
 9. PASS: every task that touches user data names its data classes and has a security AC (§8).
+
+**Revision 4** (2026-11-21, Ton's second-round answers, decisions file Part 3): Q-15 is answered, so payday / cycle start is now 1–31 with month-end clamping plus a "Last day of the month" option. Changed: §2 non-goals, T-02 (`cycleStartDay` 1–31 + new `cycleStartIsLastDay`, 9 fields), T-09, T-14 (clamping), AC-03a, AC-18, AC-19, AC-38, new AC-38a–AC-38e, T-14 definition of done, §9. Q-48 confirmed AC-51a / AC-53 (days left counts today, last day = 1). No task added or removed; no new flow branch. Checklist re-run: 9/9 PASS on pass 1.
+
+**Revision 3** (2026-11-21, after the v5.1 UX/UI audit fix pass) changed T-01 (build the token pipeline; the 21 Nov token values; AC-01a, AC-01b), T-02 (`cycleStartDay` holds the payday), T-14 (AC-37a), T-16 (AC-43a, AC-44a) and T-18 (AC-51a, AC-51b, re-derived from Q-16 rather than the Figma hero). No task was added or removed; no new flow branch. Pass 1 is clean.
 
 **Revision 2** added T-18 to T-22 and changed T-02, T-09 and T-17.
 - Pass 1 of the revision failed check 4: the new branches F12–F14 had no AC.
@@ -34,7 +38,7 @@ Every Caffeine feature needs the same base: an app that launches into the four-t
 - **Platform scope:** Both (`/caffeine-pipeline foundation both`).
 - **Priority:** Must.
 - **In scope since revision 2:** the Q-16 display rules (per-day allowance, budget %, % vs previous month) as shared domain functions; the splash while the store initialises; the always-on app-switcher shield; a launch gate step that E06 fills with the App Lock prompt; and a storage layout that keeps the main ledger in the strictest class while leaving room for the V1.1 widget snapshot.
-- **Non-goals:** any real tab content (each feature replaces its placeholder); the coral + button (Tab bar `State=No add` until E02 ships); the App Lock prompt, the App Lock and Privacy Mode toggles (E06; this feature only stores the two flags, the mask string and the launch gate hook); the Theme setting (E05; this feature follows the system appearance); the widget snapshot file itself (V1.1, E28; exception recorded in `docs/security/exceptions.md`); cycle start days 29–31 (blocked by Q-15); sign-in, network and sync (no network calls in this feature).
+- **Non-goals:** any real tab content (each feature replaces its placeholder); the coral + button (Tab bar `State=No add` until E02 ships); the App Lock prompt, the App Lock and Privacy Mode toggles (E06; this feature only stores the two flags, the mask string and the launch gate hook); the Theme setting (E05; this feature follows the system appearance); the widget snapshot file itself (V1.1, E28; exception recorded in `docs/security/exceptions.md`); the payday picker UI (O5 in E04, 12G in E25; this feature stores and computes the rule only); sign-in, network and sync (no network calls in this feature).
 
 ## 3. Flow
 ```mermaid
@@ -91,16 +95,17 @@ flowchart TD
 - **purpose:** Turn the Figma variables and text styles into platform token files that every screen uses.
 - **layer:** UI
 - **what to build:** Owner `ux-ui-designer`, per `design-tokens`. Every `Caffeine / Night` variable in Dark and Light goes to `ios-app/Resources/Colors.xcassets/Night/<token>.colorset` (Any = Light, Dark = Dark) and to `CaffeineColors.kt` (`dark`, `light`, with alpha kept in ARGB). `Caffeine / Dimensions` (space 0, 8, 16, 24, 32, 40, 48, 64; radius sm, md, lg, xl, full; layout/tab-bar-inset 128; layout/row-divider-inset 72) goes to `DesignTokens.swift` and `CaffeineDimens.kt`. `iOS/*` and `Data/*` text styles go to `DesignTokens.swift` and `CaffeineType.kt`, with the Android font = system Roboto / Roboto Mono (the documented default; Q-24 may change it later, which means regenerating only). Also generate `night/shadow`. Each file carries the generated-file header.
+  **The pipeline does not exist yet** (no `scripts/tokens/`, no `docs/design/tokens.json`, no generated files); this task builds it. It must include the 21 Nov 2026 audit changes listed in `docs/design/tokens-changelog.md`: new primitives `coral/650` #CF3D20, `mint/700` #1F714C, `gray/650` #636366; new semantic token **`night/income-text`** (Dark #9EE6C4, Light #1F714C; output name `incomeText` on both platforms, used for income amounts and positive deltas drawn as text, while `night/income` stays for fills); Light `night/accent` → #CF3D20; Light `night/text-secondary` → #636366; `night/on-primary-soft` #1C1C1E at 88% in both modes; `night/on-accent-soft` #1C1C1E at 88% (Dark) and #FFFFFF at 96% (Light). Alpha tokens keep their alpha in the ARGB value / colour set. After generation, `tokens-changelog.md` stops being the only record.
 - **error behaviour:** A variable listed in `design-tokens` that is missing in Figma stops generation with the token name. No partial file is written, and the previous files stay.
 - **depends on:** none
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** The token diff (Figma both modes vs both outputs) reports 0 differences, and both apps compile with the files.
+- **definition of done:** The token diff (Figma both modes vs both outputs) reports 0 differences, AC-01a and AC-01b pass, and both apps compile with the files.
 
 ### T-02 Foundation contract
 - **purpose:** Define the one data contract, the cases table and the threat model for this feature.
 - **layer:** Data
-- **what to build:** Owner `backend-lead`, per `data-contract`. Write `docs/data-model/foundation-model.md` with the `AppSettings` entity (single row: `id` uuid, `currencyCode` iso4217 = "THB", `cycleStartDay` int 1–28 = 1, `themePreference` enum system|light|dark = system, `onboardingCompleted` bool = false, `appLockEnabled` bool = false, `privacyModeEnabled` bool = false, `createdAt` instant; all Internal). Add a **storage layout** section (Ton Q-30): the main ledger lives only in the strictest class (iOS `NSFileProtectionComplete`; Android SQLCipher with a hardware-backed Keystore KEK). A separate widget snapshot file in an App Group (iOS) is **reserved for V1.1** (E28) under exception EX-001 in `docs/security/exceptions.md`. Nothing in foundation may assume that the widget can read the main store. Also document: the wrapped-DEK record (Restricted, never in the store, only in Keychain / app-private storage), the `FieldCipher` wire format (nonce 12 bytes ‖ ciphertext ‖ tag 16 bytes; AAD = `"<recordId>|<fieldName>|<schemaVersion>"`) and repository names (`AppSettingsRepository.get()`, `.update(_:)`). Write `docs/data-model/foundation-cases.md` with one row per calculation AC in T-13 to T-16, T-18 and T-19, plus one fixed `FieldCipher` test vector (key, nonce, AAD, plaintext → ciphertext hex). Write `docs/security/foundation-threats.md` (STRIDE). Append V1 / Room 1 to `migrations.md`.
+- **what to build:** Owner `backend-lead`, per `data-contract`. Write `docs/data-model/foundation-model.md` with the `AppSettings` entity (single row: `id` uuid, `currencyCode` iso4217 = "THB", `cycleStartDay` int 1–31 = 1 (this is **the user's payday**, because the budget cycle follows payday, Ton A1; O5 and 12B / 12G write it in later features, and 1 means "no payday set"), `cycleStartIsLastDay` bool = false ("Last day of the month", Ton Q-15; when true, `cycleStartDay` is ignored), `themePreference` enum system|light|dark = system, `onboardingCompleted` bool = false, `appLockEnabled` bool = false, `privacyModeEnabled` bool = false, `createdAt` instant; all Internal). Add a **storage layout** section (Ton Q-30): the main ledger lives only in the strictest class (iOS `NSFileProtectionComplete`; Android SQLCipher with a hardware-backed Keystore KEK). A separate widget snapshot file in an App Group (iOS) is **reserved for V1.1** (E28) under exception EX-001 in `docs/security/exceptions.md`. Nothing in foundation may assume that the widget can read the main store. Also document: the wrapped-DEK record (Restricted, never in the store, only in Keychain / app-private storage), the `FieldCipher` wire format (nonce 12 bytes ‖ ciphertext ‖ tag 16 bytes; AAD = `"<recordId>|<fieldName>|<schemaVersion>"`) and repository names (`AppSettingsRepository.get()`, `.update(_:)`). Write `docs/data-model/foundation-cases.md` with one row per calculation AC in T-13 to T-16, T-18 and T-19, plus one fixed `FieldCipher` test vector (key, nonce, AAD, plaintext → ciphertext hex). Write `docs/security/foundation-threats.md` (STRIDE). Append V1 / Room 1 to `migrations.md`.
 - **error behaviour:** A plan field that can't be classified → CONTRACT stays not ready and the question goes to Ton (BLOCKED).
 - **depends on:** none
 - **platform:** Both
@@ -170,7 +175,7 @@ flowchart TD
 ### T-09 Encrypted local store and AppSettings
 - **purpose:** Open the app's encrypted database and seed the settings row every feature reads.
 - **layer:** Data
-- **what to build:** This is the main ledger, in the strictest class (Ton Q-30); it is never placed in an App Group container. iOS: a SwiftData `ModelContainer` in the app's own Application Support with `FileProtectionType.complete`; the store file has `isExcludedFromBackup = true`, because the key is device-only and a restored copy could never be opened (cross-device restore is E05 iCloud Backup). Android: Room on SQLCipher (`SupportOpenHelperFactory` with the DEK). Schema V1 / Room 1 contains `AppSettings` as in T-02, seeded once on first launch. `AppSettingsRepository` uses identical method names on both platforms. `cycleStartDay` accepts 1–28 only (29–31 waits for Q-15).
+- **what to build:** This is the main ledger, in the strictest class (Ton Q-30); it is never placed in an App Group container. iOS: a SwiftData `ModelContainer` in the app's own Application Support with `FileProtectionType.complete`; the store file has `isExcludedFromBackup = true`, because the key is device-only and a restored copy could never be opened (cross-device restore is E05 iCloud Backup). Android: Room on SQLCipher (`SupportOpenHelperFactory` with the DEK). Schema V1 / Room 1 contains `AppSettings` as in T-02, seeded once on first launch. `AppSettingsRepository` uses identical method names on both platforms. `cycleStartDay` accepts 1–31 (Ton Q-15); `cycleStartIsLastDay` is a plain bool.
 - **error behaviour:** Open failure → T-10 with `STORE-DB-01`. An invalid update throws `VALIDATION-CYCLE-01` and keeps the stored value.
 - **depends on:** T-02, T-07
 - **platform:** Both
@@ -220,12 +225,12 @@ flowchart TD
 ### T-14 Budget cycle boundaries
 - **purpose:** Compute which monthly cycle a moment belongs to, in the device timezone.
 - **layer:** Domain
-- **what to build:** `BudgetCycle.containing(instant, startDay, timeZone)` → first and last local date (inclusive) and days in cycle; `BudgetCycle.dayIndex(today)` → days elapsed (including today) and days remaining (including today). `startDay` is 1–28.
-- **error behaviour:** `startDay` outside 1–28 throws `VALIDATION-CYCLE-01`, with no date in the message.
+- **what to build:** `BudgetCycle.containing(instant, rule, timeZone)` → first and last local date (inclusive) and days in cycle, where `rule` is `.day(n)` (n = 1–31) or `.lastDayOfMonth`. **Month-end clamping (Ton Q-15):** a month's payday is min(n, days in that month), so 29–31 snap back to the last valid day of a shorter month and never roll into the next month; `.lastDayOfMonth` resolves to each month's final day. The cycle runs from the payday on or before the local date of `instant` to the day before the next month's payday. `BudgetCycle.dayIndex(today)` → days elapsed (including today) and **days left** (including today: (cycle end − today) + 1, Ton Q-48; this is the Home badge count and the per-day divisor).
+- **error behaviour:** `.day(n)` with n outside 1–31 throws `VALIDATION-CYCLE-01`, with no date in the message.
 - **depends on:** T-02
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-34 to AC-38 pass on both platforms with the T-02 case rows.
+- **definition of done:** AC-34 to AC-38, AC-37a and AC-38a to AC-38e pass on both platforms with the T-02 case rows.
 
 ### T-15 Cash-flow totals
 - **purpose:** One shared In / Out / Net function for Home, History and Analytics.
@@ -245,7 +250,7 @@ flowchart TD
 - **depends on:** T-02, T-14, T-15
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-43 to AC-47 pass on both platforms.
+- **definition of done:** AC-43 to AC-47, AC-43a and AC-44a pass on both platforms.
 
 ### T-17 QA: shell smoke, parity and security checks
 - **purpose:** Verify both apps independently: shell behaviour, identical domain results, security baseline.
@@ -255,7 +260,7 @@ flowchart TD
 - **depends on:** T-05 to T-16, T-18 to T-21 (T-22 is verified once Q-31 unblocks it)
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-48 to AC-50 pass, every revision-2 AC (AC-51 to AC-64) passes on both platforms, and `docs/review/foundation-qa.md` is written.
+- **definition of done:** AC-48 to AC-50 pass, every revision-2 AC (AC-51 to AC-64) and revision-3 AC (AC-37a, AC-43a, AC-44a, AC-51a, AC-51b) passes on both platforms, and `docs/review/foundation-qa.md` is written.
 
 ### T-18 Per-day allowance (Ton Q-16)
 - **purpose:** One shared rule for "฿x a day left" on the Budget hero.
@@ -265,7 +270,7 @@ flowchart TD
 - **depends on:** T-02, T-14, T-16
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-51 to AC-54 pass on both platforms with the case rows.
+- **definition of done:** AC-51 to AC-54, AC-51a and AC-51b pass on both platforms with the case rows.
 
 ### T-19 Percentage display rules (Ton Q-16)
 - **purpose:** One shared rule for the budget % and the "% vs previous month" figures.
@@ -313,11 +318,13 @@ flowchart TD
 
 **T-01**
 - AC-01: Given Figma `night/shadow` is black at 35% in Dark and black at 12% in Light, When tokens are generated, Then iOS `Night/shadow.colorset` has alpha 0.35 (Dark) and 0.12 (Any), and Android `CaffeineColors.dark.shadow = 0x59000000`, `CaffeineColors.light.shadow = 0x1F000000`.
+- AC-01a: Given Figma `night/income-text` is #9EE6C4 in Dark and #1F714C in Light, When tokens are generated, Then iOS `Night/income-text.colorset` has Dark #9EE6C4 and Any #1F714C, and Android `CaffeineColors.dark.incomeText = 0xFF9EE6C4`, `CaffeineColors.light.incomeText = 0xFF1F714C`; and Light `accent` = #CF3D20 (`0xFFCF3D20`), Light `textSecondary` = #636366 (`0xFF636366`).
+- AC-01b *edge*: Given `night/on-primary-soft` is #1C1C1E at 88% and Light `night/on-accent-soft` is #FFFFFF at 96%, When tokens are generated, Then iOS `on-primary-soft` has alpha 0.88 in both appearances and Android `onPrimarySoft = 0xE01C1C1E` (round(0.88 × 255) = 224); Android `light.onAccentSoft = 0xF5FFFFFF` (round(0.96 × 255) = 245) and `dark.onAccentSoft = 0xE01C1C1E`; no generated file stores these as an opaque colour plus a separate opacity.
 - AC-02: Given generation has finished, When the token diff runs over all `Caffeine / Night` variables in both modes and all `Caffeine / Dimensions` variables, Then it reports 0 differences for iOS and 0 for Android.
 - AC-03 *edge*: Given `night/bg-clear` is renamed in Figma, When generation runs, Then it stops with "missing token: night/bg-clear", and the previously generated files are unchanged byte for byte.
 
 **T-02**
-- AC-03a: Given the contract is written, When backend-lead checks it, Then `AppSettings` has 8 fields, each classified Internal, the storage layout reserves the V1.1 widget snapshot outside the main store, `cycleStartDay` has range 1–28, and the cases file has at least one row for each of AC-29 to AC-47.
+- AC-03a: Given the contract is written, When backend-lead checks it, Then `AppSettings` has 9 fields, each classified Internal, the storage layout reserves the V1.1 widget snapshot outside the main store, `cycleStartDay` has range 1–31 and `cycleStartIsLastDay` defaults to false, and the cases file has at least one row for each of AC-29 to AC-47.
 - AC-03b *edge*: Given a plan field has no class in `security-standard` §2, When the contract is checked, Then CONTRACT_READY is not set and the field is listed in `docs/status.md` Notes for Ton.
 
 **T-03**
@@ -350,8 +357,8 @@ flowchart TD
 - AC-17: Given the test vector in `foundation-cases.md`, When the iOS and Android `open` run on the same ciphertext hex, Then both return the vector's plaintext.
 
 **T-09**
-- AC-18: Given a fresh install, When first launch finishes, Then `AppSettings` has exactly 1 row: currencyCode "THB", cycleStartDay 1, themePreference "system", onboardingCompleted false, appLockEnabled false, privacyModeEnabled false.
-- AC-19 *edge*: Given AppSettings has cycleStartDay 1, When `update(cycleStartDay: 29)` is called, Then it throws `VALIDATION-CYCLE-01` and the stored value is still 1.
+- AC-18: Given a fresh install, When first launch finishes, Then `AppSettings` has exactly 1 row: currencyCode "THB", cycleStartDay 1, cycleStartIsLastDay false, themePreference "system", onboardingCompleted false, appLockEnabled false, privacyModeEnabled false.
+- AC-19 *edge*: Given AppSettings has cycleStartDay 1, When `update(cycleStartDay: 32)` or `update(cycleStartDay: 0)` is called, Then it throws `VALIDATION-CYCLE-01` and the stored value is still 1; When `update(cycleStartDay: 31)` is called, Then the stored value is 31 (Ton Q-15).
 - AC-20 *security*: Given the app has written AppSettings, When the Android database file is opened with plain SQLite (no key), Then opening fails with "file is not a database"; and on iOS the store file's `FileProtectionType` is `complete` and `isExcludedFromBackup` is true.
 
 **T-10**
@@ -380,7 +387,13 @@ flowchart TD
 - AC-35 *edge*: Given startDay 1 and Asia/Bangkok, When `containing(2026-11-30T17:30:00Z)` runs (00:30 on 1 Dec local), Then the cycle is 2026-12-01 to 2026-12-31 with 31 days.
 - AC-36: Given startDay 25 and local date 2026-11-24, When `containing` runs, Then the cycle is 2026-10-25 to 2026-11-24 with 31 days.
 - AC-37: Given the cycle 2026-11-01 to 2026-11-30 and today 2026-11-18, When `dayIndex` runs, Then days elapsed = 18 and days remaining = 13.
-- AC-38 *edge* (F11): Given startDay 29, When `containing` runs, Then it throws `VALIDATION-CYCLE-01`, whose message contains no date.
+- AC-37a (payday cycle, revision 3): Given startDay 25 (payday), Asia/Bangkok and today 2026-11-18, When `containing` and `dayIndex` run, Then the cycle is 2026-10-25 to 2026-11-24 with 31 days, days elapsed = 25 and days remaining = 7 (today counted in both).
+- AC-38 *edge* (F11): Given rule `.day(0)` or `.day(32)`, When `containing` runs, Then it throws `VALIDATION-CYCLE-01`, whose message contains no date.
+- AC-38a *edge* (clamping, Ton Q-15): Given rule `.day(31)`, Asia/Bangkok and local date 2027-02-15, When `containing` and `dayIndex` run, Then the cycle is 2027-01-31 to 2027-02-27 with 28 days (the February payday is 28 Feb, not 3 Mar), and days left = 13.
+- AC-38b *edge*: Given rule `.day(31)` and local date 2027-03-10, Then the cycle is 2027-02-28 to 2027-03-30 with 31 days; Given local date 2027-04-15, Then the cycle is 2027-03-31 to 2027-04-29 with 30 days (April payday clamps to 30 Apr).
+- AC-38c *edge* (leap year): Given rule `.day(31)` and local date 2028-02-10, Then the cycle is 2028-01-31 to 2028-02-28 with 29 days (the February payday is 29 Feb 2028); Given rule `.day(29)` and local date 2027-02-28, Then the cycle is 2027-02-28 to 2027-03-28 with 29 days.
+- AC-38d *edge*: Given rule `.day(30)` and local date 2027-03-15, Then the cycle is 2027-02-28 to 2027-03-29 with 30 days (the March payday stays 30 Mar).
+- AC-38e (Last day of the month): Given rule `.lastDayOfMonth` and local dates 2027-02-15 and 2027-04-15, Then the cycles are 2027-01-31 to 2027-02-27 and 2027-03-31 to 2027-04-29, identical to `.day(31)` for the same dates (glossary G-6).
 
 **T-15**
 - AC-39: Given income 52,000, expenses 20,000 and 13,550, and a card payment transfer of 5,000, When `totals` runs, Then in = 52,000, out = 33,550, net = 18,450 (formatted "+฿52,000", "−฿33,550", "+฿18,450").
@@ -390,7 +403,9 @@ flowchart TD
 
 **T-16**
 - AC-43: Given budget 40,000, spent 33,550, day 18 of 30, When `evaluate` runs, Then leftToSpend = 6,450, percentUsed = 0.83875, elapsed = 0.6, status = overPace.
+- AC-43a (payday cycle, revision 3): Given budget 40,000, spent 33,550, day 25 of 31, When `evaluate` runs, Then leftToSpend = 6,450, percentUsed = 0.83875, elapsed = 25/31 (0.806…), status = overPace.
 - AC-44 *edge*: Given budget 40,000, spent 24,000, day 18 of 30, When `evaluate` runs, Then percentUsed = 0.6 = elapsed and status = onTrack.
+- AC-44a *edge* (revision 3): Given budget 40,000, spent 32,000, day 25 of 31, When `evaluate` runs, Then percentUsed = 0.8 <= elapsed 25/31 and status = onTrack (the Figma 1B frame shows Over pace with this data; code follows the rule).
 - AC-45 *edge*: Given budget 40,000, spent 40,000, day 18 of 30, Then leftToSpend = 0 and status = overPace; Given spent 41,200, Then status = overBudget and overBy = 1,200 (caption "Over budget by ฿1,200").
 - AC-46 *edge* (F11): Given budget nil and spent 33,550, Then status = noBudget; Given budget 0, Then it throws `VALIDATION-BUDGET-01` with no values in the message.
 - AC-47: Given budget 40,000, expenses of 33,550 and income of 52,000 in the cycle, When spent is taken from `CashFlow.totals(...).outTotal` and evaluated on day 18 of 30, Then leftToSpend = 6,450 (income does not reduce spend).
@@ -402,8 +417,10 @@ flowchart TD
 
 **T-18** (Ton Q-16)
 - AC-51: Given leftToSpend 6,450, cycle 2026-11-01 to 2026-11-30 and today 2026-11-18, When `perDayAllowance` runs, Then remaining days = 13 and the result is ฿496 (6,450 / 13 = 496.15, floored).
+- AC-51a (payday cycle, revision 3): Given leftToSpend 6,450, cycle 2026-10-25 to 2026-11-24 and today 2026-11-18, When `perDayAllowance` runs, Then remaining days = 7 and the result is ฿921 (6,450 / 7 = 921.43, floored). The Figma hero's "฿1,075" (÷ 6) does not follow Ton Q-16 and is not a test value (master plan DG-48).
+- AC-51b *edge* (revision 3): Given leftToSpend 40,000, cycle 2026-11-25 to 2026-12-24 and today 2026-11-25 (first day), When it runs, Then remaining days = 30 and the result is ฿1,333 (40,000 / 30 = 1,333.33, floored; Figma 1I shows ฿1,379).
 - AC-52: Given leftToSpend 6,458.40 and 13 remaining days, When it runs, Then the result is ฿496 (496.80 floored, not ฿497).
-- AC-53 *edge*: Given today = cycle end (2026-11-30) and leftToSpend 1,200, When it runs, Then remaining days = 1 and the result is ฿1,200.
+- AC-53 *edge*: Given today = cycle end (2026-11-30) and leftToSpend 1,200, When it runs, Then remaining days = 1 and the result is ฿1,200 (the badge reads "1 day left", Ton Q-48).
 - AC-54 *edge*: Given leftToSpend −1,200 (over budget) or 0, When it runs, Then the result is ฿0; Given today 2026-12-01 with cycle end 2026-11-30, Then it throws `VALIDATION-CYCLE-02` with no values in the message.
 
 **T-19** (Ton Q-16)
@@ -457,7 +474,7 @@ Threat model: `docs/security/foundation-threats.md` (T-02, backend-lead).
 
 ## 9. Open questions (top 3 for this feature; none blocks starting it)
 1. **Q-31 Android API 28–32 shield:** "Always shield" needs FLAG_SECURE there, which also blocks user screenshots everywhere. Accept, or accept a best-effort shield on API 28–32? (blocks T-22 only)
-2. **Q-15 Cycle start day 29–31:** how do short months behave? Until then, 1–28 only (T-09, T-14). The same question now applies to card cut-off and due days 29–31 (E01).
+2. **Q-52 Period labels under a payday cycle** (master plan §8): does a cycle 25 Oct–24 Nov read "Nov", and do History / Analytics periods follow the cycle or the calendar month? If it is the cycle, a `BudgetCycle.label` function joins T-14. Does not block foundation.
 3. **Q-41 % vs previous month when the previous month is ฿0:** T-19 returns `.notComparable`; how it is shown is decided in E12. Also noted: Ton's ">999%" cap applies to "% vs previous month" only; the budget % has no cap in his answer.
 
-Answered by Ton on 2026-11-21 and applied here: Q-16 (T-18, T-19), Q-04 (T-20, T-21), Q-30 (T-02, T-09). Q-24 Android font stays at the Roboto default (non-blocking).
+Answered by Ton on 2026-11-21 and applied here: Q-16 (T-18, T-19), Q-04 (T-20, T-21), Q-30 (T-02, T-09). Q-24 Android font stays at the Roboto default (non-blocking). Applied in revision 3 from the CLAUDE.md audit fix record: payday = cycle start (T-02, AC-37a, AC-43a, AC-51a). Applied in revision 4 (decisions file Part 3): Q-15 month-end clamping and "Last day of the month" (T-02, T-09, T-14, AC-38a–AC-38e); Q-48 days left counts today, last day = 1 (T-14 `dayIndex`, AC-53). Golden figures for case rows: `docs/plan/golden-sample-data.md`.
