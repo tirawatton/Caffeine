@@ -131,7 +131,10 @@ No frame. Each tab root shows its Large Title ("Home", "Wallet", "Analytics", "P
 | Tab placeholders | `<tab>.placeholder` | the tab name | header |
 
 ## 6. Gaps and questions (none blocks DESIGN_READY)
-1. **App icon** is still not chosen (Branding page options A/B/C). The splash uses the wordmark, so it does not need the icon, but Android 12+ shows the launcher icon in some system surfaces. Ton to pick.
+Ton answered the four open design questions on 21 Nov 2026 (`docs/decisions/2026-11-21-ton-answers.md` Part 7).
+1. **App icon:** not chosen yet (Ton D-1: "leave it, not final"). The splash and shield use the wordmark; no AppIcon set until Ton decides.
 2. **Wordmark image asset** (iOS PDF / Android vector) needs a clean export (§4); owner ux-ui-designer on request, or the developer from the Figma UI.
-3. **Legacy hero tokens** in `Caffeine / Night` (5) and the unused `Caffeine / Bento` collection: delete them from Figma? (Conservative choice made: kept, generated as deprecated.)
+3. **Legacy hero tokens** (5) and the unused `Caffeine / Bento` collection: **keep, marked deprecated** until every active frame is migrated to the Home v5 global variables and verified; delete them completely once zero frames reference them (Ton D-2).
 4. **Thai copy** for F2 / F3 waits for Q-19.
+5. **Store error copy (F2/F3):** approved as written (Ton D-3).
+6. **Privacy shield:** solid cover with the centred wordmark, not a blur, approved (Ton D-4).

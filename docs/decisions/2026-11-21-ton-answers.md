@@ -204,3 +204,23 @@ Source: Ton's answers to Q-59 to Q-62, relayed to `ba` by the main session on 21
 - The carried amount is part of `committedUnpaid` (foundation T-16, summed by E11-T19), so the Home hero, the widget snapshot and the forecast all include it. A charge that stays unpaid for several cycles is carried each time, alongside that cycle's own charge for the same bill. In the golden case, the Dec cycle then holds two AIS entries (Nov overdue and Dec upcoming).
 - Mark paid on a carried charge follows Q-56. The expense counts in the cycle of its payment date. Paid on 26 Nov at ฿599: Dec spent ฿599, Left to spend stays ฿24,954, "29 days left", ฿860/day. If the payment date is set back into the closed Nov cycle, the expense counts in Nov and Dec Left to spend becomes ฿25,553.
 - Foundation T-16 `overBy` now equals −leftToSpend (spent − budget + committedUnpaid), so it matches the State B caption. `billsExceedBy` (State A) is unchanged.
+
+## Part 7 — Foundation design questions (21 Nov 2026)
+
+Source: Ton's answers to the four questions in `docs/design/foundation-spec.md` §6 (raised by `ux-ui-designer` with DESIGN_READY for foundation), recorded by the main session as given.
+
+### D-1 · App icon: not chosen yet
+- Leave it. The app icon is not final, so no option (A, B or C on the Branding page) is picked. The splash and privacy shield use the wordmark and do not need it. The iOS build keeps no AppIcon set until Ton decides.
+
+### D-2 · Legacy tokens: keep as deprecated, delete once unused
+- The 5 legacy `night/hero*` tokens (`hero`, `hero-start`, `hero-end`, `hero-rim`, `hero-text-secondary`) and the unused `Caffeine / Bento` collection **stay in Figma, marked deprecated**, until every active frame is migrated to the Home v5 global variables and verified.
+- Once **zero frames reference them**, delete them from Figma completely, so engineers cannot pull legacy tokens by accident. Until then the pipeline keeps generating the hero tokens as deprecated and never exports Bento.
+- Owner: `ux-ui-designer` (the only agent that may change Figma). The deletion needs a reference count of 0 as evidence, followed by a token pipeline run with diff = 0.
+
+### D-3 · Store error copy: approved
+- Approved as written: "We can't open your data" / "Your data is still on this device. Caffeine couldn't unlock it this time." / "Try again" / "Still stuck? Restart your phone, then open Caffeine. Don't delete the app: that erases anything you haven't backed up."
+- Reason (Ton): it is calm and reassuring, and the warning not to delete the app is essential for local-first storage. Thai copy still waits for Q-19.
+
+### D-4 · Privacy shield: solid, not blur (confirms the designer's choice under Q-04)
+- The app-switcher privacy shield is a **solid `night/bg` cover with the centred Caffeine wordmark**, not a blur.
+- Reason (Ton): a blur can still leak high-contrast balance figures in the iOS and Android app switchers, and a solid cover fits the minimal look.
