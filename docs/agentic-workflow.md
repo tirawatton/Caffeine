@@ -102,7 +102,7 @@ brief → `docs/plan/<f>-plan.md` → `docs/design/<f>-spec.md` + `img/` + `<f>-
 Status clock: `docs/status.md` (main), `docs/pipeline/{ios,android}-status.md` (lanes).
 
 ## Figma rule
-Only `ux-ui-designer` has Figma tools, including write (`use_figma`, `upload_assets`). Every other agent has none, so the rule is enforced by the agents' tool lists, not by trust. The main session follows the same rule through the conductor. File: https://www.figma.com/design/jVIND6Rm2KzxmEhO6w2b00/Caffeine?node-id=482-29722 (Feature Journeys `482:29722`; builds use v5.1 `446:10036`; navigation from App Prototype `540:21852`).
+Only `ux-ui-designer` has Figma write tools (`use_figma`, `upload_assets`). `ba` has read-only Figma tools for the screen map. The developers, the Lead and QA have none, so the rule is enforced by the agents' tool lists, not by trust. The main session follows the same rule through the conductor. File: https://www.figma.com/design/jVIND6Rm2KzxmEhO6w2b00/Caffeine?node-id=482-29722 (Feature Journeys `482:29722`; builds use v5.1 `446:10036`; navigation from App Prototype `540:21852`).
 
 ## Modes
 - **Team**: `/caffeine-pipeline <feature> <ios|android|both>`.

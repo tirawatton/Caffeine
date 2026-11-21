@@ -9,7 +9,7 @@ description: How to read the Caffeine Figma file (v5.1 page, Feature Journeys, A
 - File: `jVIND6Rm2KzxmEhO6w2b00` (Caffeine), personal team only.
 - **Never access the TISCO FINANCIAL GROUP PUBLIC COMPANY LIMITED organisation** (`organization::1205441950410473811`) for any reason.
 - Call `create_session` with the file key before any other Figma tool. Load the `figma:figma-use` skill before any `use_figma` call and `figma:figma-design-to-code` before `get_design_context`.
-- **Only `ux-ui-designer` may change the Figma file** (it is the only agent with `use_figma` / `upload_assets`, and it runs the `designer` skill loop). No other agent has any Figma tool, and the main session routes every Figma change to `ux-ui-designer` as Feedback. Link: https://www.figma.com/design/jVIND6Rm2KzxmEhO6w2b00/Caffeine?node-id=482-29722 (Feature Journeys).
+- **Only `ux-ui-designer` may change the Figma file** (it is the only agent with `use_figma` / `upload_assets`, and it runs the `designer` skill loop). `ba` has **read-only** Figma tools (metadata, screenshots) for the screen map. No other agent has any Figma tool, and the main session routes every Figma change to `ux-ui-designer` as Feedback. Link: https://www.figma.com/design/jVIND6Rm2KzxmEhO6w2b00/Caffeine?node-id=482-29722 (Feature Journeys).
 - After any Figma change, `ux-ui-designer` re-clones the changed frames onto Feature Journeys and the App Prototype and records node ids in `CLAUDE.md`.
 
 ## Source of truth
