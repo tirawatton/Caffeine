@@ -1,2 +1,7 @@
 .DS_Store
 _backup/
+ios-app/build/
+ios-app/Caffeine.xcodeproj/
+*.xcresult
+qa-automation/.pytest_cache/
+__pycache__/

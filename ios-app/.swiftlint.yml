@@ -1,0 +1,25 @@
+included: [App, Sources, Tests]
+excluded: [build, .build]
+opt_in_rules: [force_unwrapping, implicitly_unwrapped_optional]
+disabled_rules: [todo]
+line_length: {warning: 120, error: 200}
+function_body_length: {warning: 40, error: 60}
+file_length: {warning: 300, error: 500}
+identifier_name: {min_length: 2, excluded: [id]}
+custom_rules:
+  no_swiftdata_in_features:
+    name: "No SwiftData in Features"
+    regex: 'import SwiftData|ModelContext|@Query'
+    included: ".*/Sources/Features/.*\\.swift"
+    message: "SwiftData only in Sources/Repositories."
+    severity: error
+  no_double_money:
+    name: "No Double for money"
+    regex: '(amount|price|balance|fee|cost|total)\w*\s*:\s*(Double|Float)'
+    message: "Use Decimal for money."
+    severity: error
+  no_observable_object:
+    name: "MVI: no ObservableObject"
+    regex: 'ObservableObject|@StateObject|@ObservedObject|@Published'
+    message: "Use @Observable Store (mvi-ios)."
+    severity: error

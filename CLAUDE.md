@@ -28,6 +28,19 @@ Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> Exit loop
 - **Hand-off between skills:** `designer` exits into `ios-swiftui-design`. A design-level failure found during implementation goes back to `designer` as Feedback (re-enters at Fix).
 - Ambiguous requirement at any stage → ask Ton (standing rule).
 
+## Agentic build workflow (native iOS + Android, since 21 Nov 2026)
+
+The app is built by Claude Code agents in this repo, adapted from `myproject/caffeine-project`. Full description and diagram: `docs/agentic-workflow.md`.
+
+- **Code:** `ios-app/` (Swift 6, SwiftUI, SwiftData, MVI, **iOS 18+**, XcodeGen `project.yml`) and `android-app/` (Kotlin, Compose, Room, MVI, **minSdk 28**, package `com.tonapps.caffeine`). Same product journey, same logical data model, same domain results; UI is native per platform. Money is `Decimal` / `BigDecimal`. `qa-automation/` holds the shared Appium suite.
+- **Modes:** **Solo (default)** = `solo-planner` → `solo-builder`, one platform per pass. **Team** = `/caffeine-pipeline <feature> <ios|android|both>`. Switch to Team when a second person joins, features ship faster than Ton can review, or an iOS/Android difference reaches a user.
+- **Team pipeline:** `product-planner` → `plan-validator` → `data-architect` ∥ `design-spec-extractor` → `design-governor` (+ `analytics-engineer`) → `token-sync-engineer` → **Ton approves design** → `/ios-pipeline` ∥ `/android-pipeline` (architect → data engineer ∥ UI engineer → verifier → reviewer) → `qa-parity-tester` → `release-engineer` (beta only; production only on Ton's explicit confirmation).
+- **Connections:** the main session runs the pipeline skills and is the only place agents are started (subagents cannot start subagents). Agents hand off through files in `docs/` and status files (`docs/status.md`, `docs/pipeline/{ios,android}-status.md`).
+- **Loop:** the same loop as above. Gates are mechanical first (build, tests, lint, greps, contrast, token diff). **3 attempts per gate**, then stop and ask Ton. Failures are written to `docs/lessons.md` at the moment they are found; every agent reads it first.
+- **Figma in the pipeline is read-only.** Source of truth for builds is the v5.1 page `446:10036` plus Feature Journeys `482:29722`; new design work still goes through the `designer` skill with Ton.
+- **Agents:** `.claude/agents/` (21). **Skills:** `.claude/skills/` (17) plus the existing `skills/designer` and `skills/ios-swiftui-design`.
+- **Open (Ton):** Android font (SF Pro can't ship on Android; Roboto by default); bundle id / package `com.tonapps.caffeine` are placeholders until signing is set up; app icon not chosen, so the iOS build has no AppIcon set.
+
 ## Design rules (apply to every new screen/component)
 
 - **60:30:10 color theory** (v5 handoff direction, chosen by Ton on 19 Nov 2026, supersedes the same-day "periwinkle for data marks only" rewrite) — 60% `night/bg` charcoal (paper in Light), 30% `night/surface` / `surface-raised` cards, 10% accents. Each tab gets one saturated colour block: Home and Budget & Cycle use the periwinkle **Budget hero v5**, and other tabs use a **Metric hero v5** in their tab tone (Analytics sky, Wallet mint, Fixed costs mustard, History lilac, Sync sky). Coral is for money out, primary actions and the Over budget takeover. At most one saturated block per screen. (The 19 Nov ring-card rule is kept only on the Screen 1 / Screen 8 live rows as the v4 fallback.)

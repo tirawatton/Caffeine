@@ -1,0 +1,21 @@
+# Caffeine Android lanes. Production (`release`) never runs without Ton's explicit
+# confirmation in chat for that build (see .claude/skills/fastlane-deployment).
+default_platform(:android)
+
+platform :android do
+  lane :test do
+    gradle(task: "testDebugUnitTest")
+  end
+
+  lane :beta do |options|
+    test
+    UI.user_error!("Signing not configured: set CAFFEINE_KEYSTORE and PLAY_JSON_KEY") unless ENV["PLAY_JSON_KEY"]
+    gradle(task: "bundle", build_type: "Release")
+    upload_to_play_store(track: "internal", json_key: ENV["PLAY_JSON_KEY"], release_status: "draft")
+  end
+
+  lane :release do
+    UI.user_error!("Production release requires Ton's explicit confirmation (set CAFFEINE_RELEASE_CONFIRMED=yes for this build)") unless ENV["CAFFEINE_RELEASE_CONFIRMED"] == "yes"
+    UI.message("Fill in promotion to production once the Play listing exists.")
+  end
+end

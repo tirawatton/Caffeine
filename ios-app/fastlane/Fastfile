@@ -1,0 +1,25 @@
+# Caffeine iOS lanes. Production (`release`) never runs without Ton's explicit
+# confirmation in chat for that build (see .claude/skills/fastlane-deployment).
+default_platform(:ios)
+
+platform :ios do
+  before_all { sh("cd ../ && xcodegen generate") }
+
+  lane :test do
+    run_tests(project: "Caffeine.xcodeproj", scheme: "Caffeine", destination: "id=#{ENV.fetch("SIM_ID")}")
+  end
+
+  lane :beta do |options|
+    test
+    UI.user_error!("Signing not configured: set DEVELOPMENT_TEAM and ASC_* env vars") unless ENV["ASC_KEY_ID"]
+    api_key = app_store_connect_api_key(key_id: ENV["ASC_KEY_ID"], issuer_id: ENV["ASC_ISSUER_ID"], key_filepath: ENV["ASC_KEY_PATH"])
+    match(type: "appstore", readonly: true, api_key: api_key)
+    build_app(project: "Caffeine.xcodeproj", scheme: "Caffeine", export_method: "app-store")
+    upload_to_testflight(api_key: api_key, changelog: options[:changelog] || "")
+  end
+
+  lane :release do
+    UI.user_error!("Production release requires Ton's explicit confirmation (set CAFFEINE_RELEASE_CONFIRMED=yes for this build)") unless ENV["CAFFEINE_RELEASE_CONFIRMED"] == "yes"
+    UI.message("Fill in deliver once App Store metadata exists.")
+  end
+end
