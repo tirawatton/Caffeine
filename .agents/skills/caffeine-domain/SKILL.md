@@ -15,7 +15,8 @@ Both apps must give the same result for the same input. A difference in validati
 - Every amount is signed: expense `−฿320`, income `+฿52,000`.
 
 ## Amount colour rule (from the design rules)
-- Expense amounts: coral (`night/accent`). Income: mint (`night/income`). Transfers and card payments: `text-primary`.
+- Expense amounts: coral (`night/accent`). Income amounts and positive deltas drawn as text: `night/income-text` (Dark mint/300, Light mint/700; added in the 21 Nov 2026 audit fix pass, approved by Ton). Mint fills (badges, bars, circles) keep `night/income`. Transfers and card payments: `text-primary`.
+- Alert colour (negative Left to spend, Overdue badge, the spec's "Alert Red #FF3B30"): always the semantic coral token `night/accent`, with an icon and a label. Never hard-code #FF3B30 (Ton Q-59).
 - Summary totals (day nets, Net cash flow, History net) are signed and neutral: `text-secondary` for day nets, `text-primary` for headline totals.
 - Never rely on colour alone: the sign is always shown.
 
@@ -27,7 +28,7 @@ Both apps must give the same result for the same input. A difference in validati
 - Transfers and card payments are never counted in In / Out / Net or budgets.
 
 ## Budget, cycle and pace (Home Budget hero v5)
-Source: Ton's binding decisions in `docs/decisions/2026-11-21-ton-answers.md` (Q-15, Q-16, Q-48, Q-51, Q-52, Q-53, Q-54 to Q-58). Where an older plan or Figma frame disagrees, these rules win.
+Source: Ton's binding decisions in `docs/decisions/2026-11-21-ton-answers.md` (Q-15, Q-16, Q-48, Q-51, Q-52, Q-53, Q-54 to Q-61). Where an older plan or Figma frame disagrees, these rules win.
 
 **Cycle**
 - Cycle: monthly, starting on the user's payday (`cycleStartDay` 1–31, or "Last day of the month") and ending the day before the next payday. No payday set = 1st of the month. Month boundaries use the device timezone, not UTC.
@@ -37,16 +38,20 @@ Source: Ton's binding decisions in `docs/decisions/2026-11-21-ton-answers.md` (Q
 - Elapsed = days elapsed / days in cycle (inclusive of today).
 
 **Left to spend (concept name "Safe to Spend")**
-- **Left to spend = Budget − Actual expenses in the cycle − Upcoming & overdue unpaid fixed costs (bills + subscriptions + installments) due in the active cycle.** One formula for the Home hero, the widget snapshot and the forecast. Income never raises it.
-- Set aside ("Reserved"): every unpaid fixed cost of every kind, whatever the paying account (cash, bank or credit card), whose charge date falls in the active cycle, from the first day of the cycle. A fixed cost due in the next cycle is not set aside.
-- Overdue: an unpaid fixed cost whose due date has passed stays set aside in the current cycle until the user taps **Mark paid** or **Skip this cycle**. Its badge reads "Overdue". Skip releases the amount and creates no expense.
-- **Mark paid** moves the fixed cost from Reserved to Actual: the linked expense is deducted from the paying account's balance and added to actual spent, so total budget consumption does not change. **Left to spend changes only by the variance: Scheduled amount − Actual paid amount.** The same rule applies when an expense is linked to a bill instead of a new one being posted. This supersedes the Q-21 wording "Confirm reduces Left to spend".
+- **Left to spend = Budget − Actual expenses in the cycle − Upcoming & overdue unpaid fixed costs (bills + subscriptions + installments) due in the active cycle.** "Overdue" includes unpaid charges carried from earlier cycles (Q-60, below). One formula for the Home hero, the widget snapshot and the forecast. Income never raises it.
+- Set aside ("Reserved"): every unpaid fixed cost of every kind, whatever the paying account (cash, bank or credit card), whose charge date falls in the active cycle, from the first day of the cycle, plus the carried overdue ones (below). A fixed cost due in the next cycle is not set aside yet.
+- Overdue: an unpaid fixed cost whose due date has passed stays set aside until the user taps **Mark paid** or **Skip this cycle**. Its badge reads "Overdue". Skip releases the amount at once and creates no expense.
+- **Carry-forward at the cycle boundary (Ton Q-60):** an overdue unpaid fixed cost is **carried into the next cycle's set-aside** when a new cycle starts, on top of that cycle's own charges, and keeps being carried cycle after cycle until Mark paid or Skip this cycle. It is never released automatically on rollover. So the set-aside of the active cycle = unpaid charges dated in the active cycle + every overdue unpaid charge from earlier cycles.
+- **Mark paid** moves the fixed cost from Reserved to Actual: the linked expense is deducted from the paying account's balance and added to actual spent, so total budget consumption does not change. **Left to spend changes only by the variance: Scheduled amount − Actual paid amount.** The same rule applies when an expense is linked to a bill instead of a new one being posted. This supersedes the Q-21 wording "Confirm reduces Left to spend". The linked expense counts in the cycle of its payment date: paying a carried Nov charge on 26 Nov counts in the Dec cycle (Left to spend unchanged at the scheduled amount); a payment back-dated into the closed Nov cycle counts there, so the active cycle's Left to spend rises by the released set-aside.
 
 **% used, status, per day**
 - % used = actual spent / budget. Reserved fixed costs are not added. Display is half-up to an integer, but never 100% while spent < budget (99.1–99.9% shows 99%).
-- Status (on actual spent): **On track** when % used <= elapsed; **Over pace** when % used > elapsed and <= 100%; **Over budget** when > 100% (caption "Over budget by ฿x", x = spent − budget). **No budget** shows Net cash flow instead. Open: what the Over budget caption shows while fixed costs are still set aside (Q-61).
+- Status (on actual spent): **On track** when % used <= elapsed; **Over pace** when % used > elapsed and <= 100%; **Over budget** when > 100%. **No budget** shows Net cash flow instead.
+- **Deficit caption (Ton Q-54, Q-61):** whenever Left to spend is negative, the hero shows the exact negative figure, per day reads `฿0/day`, and the caption amount is always **abs(Left to spend)**, so it includes set-aside fixed costs:
+  - **State A**, spent <= budget, pushed negative only by set-aside fixed costs: caption "Bills exceed budget by ฿x".
+  - **State B**, spent > budget (with or without set-aside fixed costs): caption "Over budget by ฿x". With nothing set aside, x = spent − budget.
 - **Per day left = max(0, floor(Left to spend / Days left))**, whole baht. It is a display pacing guide only: never multiply it back into an amount (the forecast uses the exact Left to spend).
-- **Negative Left to spend** (set-aside fixed costs are more than what is left, spent still <= budget): show the exact negative figure (e.g. `−฿399`) in the alert colour, per day reads `฿0/day`, and the daily pacing helper text reads "Bills exceed budget by ฿399". Never show ฿0 for a deficit. % used and status stay on actual spent. Alert colour = `night/accent` (coral) with an icon and a label, the established mapping for the spec's #FF3B30 (Ton to confirm, Q-59); never a hard-coded hex.
+- **Negative Left to spend** (State A example): show the exact negative figure (e.g. `−฿399`) in the alert colour, per day reads `฿0/day`, and the daily pacing helper text reads "Bills exceed budget by ฿399". Never show ฿0 for a deficit, in State A or State B. % used and status stay on actual spent. Alert colour = `night/accent` (coral) with an icon and a label (Ton Q-59, confirmed); never a hard-coded hex.
 - Budget alerts notify at 90% and 100% of actual spent.
 
 **Worked examples** (golden data: budget ฿40,000, payday 25th, cycle 25 Oct – 24 Nov 2026, spent ฿33,550, AIS mobile bill ฿599 due 22 Nov)
@@ -57,8 +62,13 @@ Source: Ton's binding decisions in `docs/decisions/2026-11-21-ton-answers.md` (Q
 | 22 Nov, Mark paid ฿650 (variance −51) | **฿5,800** | 3 | ฿1,933 | 86% | On track |
 | 22 Nov, Mark paid ฿500 (variance +99) | **฿5,950** | 3 | ฿1,983 | 85% | On track |
 | 23 Nov, AIS still unpaid (Overdue, still set aside) | **฿5,851** | 2 | ฿2,925 | 84% | On track (84% <= 96.8%) |
-| 18 Nov, spent ฿39,800, AIS unpaid | 40,000 − 39,800 − 599 = **−฿399** | 7 | max(0, floor(−399 / 7)) = **฿0** | 99% | Over pace; helper "Bills exceed budget by ฿399" |
-| 25 Nov (first day of "Dec cycle · 25 Nov – 24 Dec"), nothing spent, all 5 fixed costs set aside (Rent ฿12,000, Spotify ฿139, iPhone installment ฿1,290, Netflix ฿419, AIS ฿599 = ฿14,447) | 40,000 − 0 − 14,447 = **฿25,553** | 30 | **฿851** | 0% | On track |
+| 18 Nov, spent ฿39,800, AIS unpaid (State A) | 40,000 − 39,800 − 599 = **−฿399** | 7 | max(0, floor(−399 / 7)) = **฿0** | 99% | Over pace; caption "Bills exceed budget by ฿399" |
+| 18 Nov, spent ฿41,200, AIS unpaid (State B) | 40,000 − 41,200 − 599 = **−฿1,799** | 7 | **฿0** | 103% | Over budget; caption "Over budget by ฿1,799" |
+| 18 Nov, spent ฿41,200, nothing set aside (State B) | 40,000 − 41,200 = **−฿1,200** | 7 | **฿0** | 103% | Over budget; caption "Over budget by ฿1,200" |
+| 25 Nov (first day of "Dec cycle · 25 Nov – 24 Dec"), nothing spent, Nov AIS paid on 22 Nov, all 5 Dec fixed costs set aside (Rent ฿12,000, Spotify ฿139, iPhone installment ฿1,290, Netflix ฿419, AIS ฿599 = ฿14,447) | 40,000 − 0 − 14,447 = **฿25,553** | 30 | **฿851** | 0% | On track |
+| 25 Nov, Nov AIS (due 22 Nov) still unpaid → carried (Q-60): set aside 14,447 + 599 = ฿15,046 | 40,000 − 0 − 15,046 = **฿24,954** | 30 | floor(24,954 / 30) = **฿831** | 0% | On track; Nov AIS badge "Overdue" |
+| 25 Nov, user taps Skip this cycle on the overdue Nov AIS | **฿25,553** | 30 | **฿851** | 0% | On track |
+| 26 Nov, Mark paid ฿599 on the overdue Nov AIS, payment dated 26 Nov (variance 0) | spent 599, set aside 14,447 → **฿24,954** (unchanged) | 29 | floor(24,954 / 29) = **฿860** | 1% (1.4975%) | On track (1.5% <= elapsed 2 / 30 = 6.7%) |
 
 Clamp examples: payday 31, today 15 Feb 2027 → cycle "Feb cycle · 31 Jan – 27 Feb", 13 days left. Card cut-off 31 / due 30, today 15 Feb 2027 → the open statement closes 28 Feb (31 → 28); the January statement's payment is due 28 Feb 2027 (30 → 28), "Due in 13 days" (days until due = due date − today, no +1). Full tables: `docs/plan/golden-sample-data.md`.
 

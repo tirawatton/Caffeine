@@ -1,8 +1,25 @@
 # foundation — plan (E00 of the master plan)
 
-Author: `ba` · 2026-11-21 (revision 6) · Platform scope: **Both** · Priority: **Must** · Release: V1.0 (foundation, built first)
+Author: `ba` · 2026-11-21 (revision 7) · Platform scope: **Both** · Priority: **Must** · Release: V1.0 (foundation, built first)
 Brief source: Ton's master-plan request of 2026-11-21 (main session) and `docs/plan/caffeine-app-master-plan.md` §E00. There is no `docs/briefs/foundation-brief.md` yet. Ton owns briefs; the conductor can write one from §1–§2 below for Ton to confirm.
 Decisions applied: `docs/decisions/2026-11-21-ton-answers.md`, covering Q-16 rounding (T-18, T-19), Q-04 splash / shield (T-20 to T-22) and Q-30 split storage (T-02, T-09). Since revision 3 also the v5.1 audit fix pass recorded in CLAUDE.md ("v5.1 — UX/UI audit fix pass (21 Nov 2026)") and `docs/design/tokens-changelog.md`: budget cycle = payday, new and changed tokens. Release: part of **V1.0**.
+
+## Readiness checklist (revision 7, after Ton's fifth-round answers Q-59 to Q-62; Verify pass 1 of 3)
+Revision 7 re-ran all 9 checks: **9/9 PASS on pass 1.**
+1. PASS: no task added. T-16, T-17 and T-18 keep all 8 fields; their definitions of done list the new ACs.
+2. PASS: amended AC-46b and new AC-46c and AC-51e are Given / When / Then with concrete values.
+3. PASS: the new ACs are edge cases of T-16 and T-18.
+4. PASS: no new flow branch. The State B caption is covered by AC-46b (F11).
+5. PASS: no new dependency.
+6. PASS: every figure re-derived from the updated `caffeine-domain`: overBy = −(40,000 − 41,200 − 599) = 1,799; 40,000 − 15,046 = 24,954; floor(24,954 / 30) = 831; floor(24,954 / 29) = 860.
+7. PASS: no new screen in this feature. The State B hero is E03-T04 / DG-56 (5).
+8. PASS: N/A, no KPI.
+9. PASS: the T-16 / T-18 security rows cover the new values (Confidential, in memory only; errors carry no values).
+
+**Revision 7** (2026-11-21, Ton's answers Q-59 to Q-62, decisions file Part 6):
+- Q-61: T-16 `overBy` = −leftToSpend (spent − budget + committedUnpaid), so the Over budget caption always equals abs(Left to spend). AC-46b now expects overBy 1,799 (was 1,200). AC-45 (no set-aside, overBy 1,200) is unchanged. **backend-lead: update the AC-46b case row.**
+- Q-60: `committedUnpaid` includes overdue charges carried from earlier cycles, and E11-T19 sums them. T-16 is unchanged. New AC-46c (24,954) and AC-51e (฿831, then ฿860 on 26 Nov) as case rows.
+- Q-59 and Q-62 need no foundation change. The token pipeline (T-01) already carries `night/accent` and `night/income-text`.
 
 ## Readiness checklist (revision 6, after Ton's fourth-round answers Q-54 to Q-58; Verify pass 1 of 3)
 Revision 6 re-ran all 9 checks: **9/9 PASS on pass 1.** Check 1: no task added; T-16 and T-18 keep all 8 fields. Check 2: AC-43c, AC-46b, AC-51d, AC-54a are Given / When / Then with concrete values. Check 3: the new ACs are edge cases of T-16 / T-18. Check 4: no new flow branch (F11 covers the negative case through AC-46b). Check 5: no new dependency. Check 6: every figure re-derived from the updated `caffeine-domain` (40,000 − 14,447 = 25,553 → ฿851/day; 40,000 − 39,800 − 599 = −399 → ฿0/day, billsExceedBy 399). Check 7: no new screen in this feature (the hero copy is E03, DG-56). Check 8: N/A — no KPI. Check 9: the security rows for T-16 / T-18 cover the new values (Confidential, in memory only; errors carry no values).
@@ -261,12 +278,12 @@ flowchart TD
 ### T-16 Budget status
 - **purpose:** One shared function for the Budget hero's numbers and status.
 - **layer:** Domain
-- **what to build:** `BudgetStatus.evaluate(budget: Decimal?, spent: Decimal, committedUnpaid: Decimal = 0, daysElapsed, daysInCycle)` returns `leftToSpend = budget − spent − committedUnpaid` (**Safe to Spend, Ton Q-51 B**; revision 6: `committedUnpaid` = the sum of upcoming **and overdue** unpaid fixed costs of **every kind** (bills, subscriptions, installments, whatever the paying account) due in the active cycle (Ton Q-55, Q-58), computed by E11-T19 and passed in; 0 until E11 ships), `percentUsed = spent / budget` (exact Decimal, not rounded; actual spent only, `committedUnpaid` is not added), `elapsed = daysElapsed / daysInCycle`, `status` (`onTrack` when percentUsed <= elapsed; `overPace` when percentUsed > elapsed and <= 1; `overBudget` when > 1; `noBudget` when budget is nil), and `overBy = spent − budget` when overBudget. `spent` is the sum of expenses only (from T-15 `outTotal`); income never reduces it. `leftToSpend` may be negative while spent ≤ budget (set-aside fixed costs larger than what is left); the function returns the exact value (never clamped to 0) and, revision 6 (Ton Q-54), `billsExceedBy = −leftToSpend` when leftToSpend < 0 and status is `onTrack` or `overPace` (absent otherwise), which feeds the hero helper "Bills exceed budget by ฿x" in E03. When status is `overBudget`, `overBy` stays spent − budget and `billsExceedBy` is absent until Ton answers Q-61. Per-day allowance and % display are in T-18 and T-19; the Forecast (E18) uses this same `leftToSpend` as its daily-spending amount (Ton Q-51 A).
+- **what to build:** `BudgetStatus.evaluate(budget: Decimal?, spent: Decimal, committedUnpaid: Decimal = 0, daysElapsed, daysInCycle)` returns `leftToSpend = budget − spent − committedUnpaid` (**Safe to Spend, Ton Q-51 B**; revision 6: `committedUnpaid` = the sum of upcoming **and overdue** unpaid fixed costs of **every kind** (bills, subscriptions, installments, whatever the paying account) due in the active cycle (Ton Q-55, Q-58), computed by E11-T19 and passed in; 0 until E11 ships), `percentUsed = spent / budget` (exact Decimal, not rounded; actual spent only, `committedUnpaid` is not added), `elapsed = daysElapsed / daysInCycle`, `status` (`onTrack` when percentUsed <= elapsed; `overPace` when percentUsed > elapsed and <= 1; `overBudget` when > 1; `noBudget` when budget is nil), and `overBy = −leftToSpend` (= spent − budget + committedUnpaid) when overBudget (revision 7, Ton Q-61: the Over budget caption always equals abs(Left to spend); with committedUnpaid 0 this is spent − budget). `spent` is the sum of expenses only (from T-15 `outTotal`); income never reduces it. `leftToSpend` may be negative while spent ≤ budget (set-aside fixed costs larger than what is left); the function returns the exact value (never clamped to 0) and, revision 6 (Ton Q-54), `billsExceedBy = −leftToSpend` when leftToSpend < 0 and status is `onTrack` or `overPace` (absent otherwise), which feeds the hero helper "Bills exceed budget by ฿x" in E03. When status is `overBudget`, `billsExceedBy` is absent and `overBy` carries the full deficit, including set-aside fixed costs (State B, Ton Q-61). `committedUnpaid` also includes overdue charges carried from earlier cycles (Ton Q-60); E11-T19 computes that sum, so T-16 does not change for it. Per-day allowance and % display are in T-18 and T-19; the Forecast (E18) uses this same `leftToSpend` as its daily-spending amount (Ton Q-51 A).
 - **error behaviour:** budget <= 0, spent < 0, committedUnpaid < 0, or daysElapsed outside 1…daysInCycle throws `VALIDATION-BUDGET-01`, with no values in the message.
 - **depends on:** T-02, T-14, T-15
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-43 to AC-47, AC-43a, AC-43b, AC-43c, AC-44a, AC-46a and AC-46b pass on both platforms.
+- **definition of done:** AC-43 to AC-47, AC-43a, AC-43b, AC-43c, AC-44a, AC-46a, AC-46b and AC-46c pass on both platforms.
 
 ### T-17 QA: shell smoke, parity and security checks
 - **purpose:** Verify both apps independently: shell behaviour, identical domain results, security baseline.
@@ -276,7 +293,7 @@ flowchart TD
 - **depends on:** T-05 to T-16, T-18 to T-21, T-23, T-24 (T-22 is verified once Q-31 unblocks it)
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-48 to AC-50 pass, every revision-2 AC (AC-51 to AC-64), revision-3 AC (AC-37a, AC-43a, AC-44a, AC-51a, AC-51b), revision-4 AC (AC-38a–AC-38e), revision-5 AC (AC-43b, AC-46a, AC-51c, AC-65 to AC-71) and revision-6 AC (AC-43c, AC-46b, AC-51d, AC-54a) passes on both platforms, and `docs/review/foundation-qa.md` is written.
+- **definition of done:** AC-48 to AC-50 pass, every revision-2 AC (AC-51 to AC-64), revision-3 AC (AC-37a, AC-43a, AC-44a, AC-51a, AC-51b), revision-4 AC (AC-38a–AC-38e), revision-5 AC (AC-43b, AC-46a, AC-51c, AC-65 to AC-71) revision-6 AC (AC-43c, AC-46b, AC-51d, AC-54a) and revision-7 AC (AC-46b as amended, AC-46c, AC-51e) passes on both platforms, and `docs/review/foundation-qa.md` is written.
 
 ### T-18 Per-day allowance (Ton Q-16)
 - **purpose:** One shared rule for "฿x a day left" on the Budget hero.
@@ -286,7 +303,7 @@ flowchart TD
 - **depends on:** T-02, T-14, T-16
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-51 to AC-54, AC-51a, AC-51b, AC-51c, AC-51d and AC-54a pass on both platforms with the case rows.
+- **definition of done:** AC-51 to AC-54, AC-51a, AC-51b, AC-51c, AC-51d, AC-51e and AC-54a pass on both platforms with the case rows.
 
 ### T-19 Percentage display rules (Ton Q-16)
 - **purpose:** One shared rule for the budget % and the "% vs previous month" figures.
@@ -360,7 +377,7 @@ flowchart TD
 - AC-03 *edge*: Given `night/bg-clear` is renamed in Figma, When generation runs, Then it stops with "missing token: night/bg-clear", and the previously generated files are unchanged byte for byte.
 
 **T-02**
-- AC-03a: Given the contract is written, When backend-lead checks it, Then `AppSettings` has 9 fields, each classified Internal, the storage layout reserves the V1.1 widget snapshot outside the main store, `cycleStartDay` has range 1–31 and `cycleStartIsLastDay` defaults to false, and the cases file has at least one row for each of AC-29 to AC-47, AC-43b, AC-43c, AC-46a, AC-46b, AC-51c, AC-51d, AC-54a and AC-65 to AC-71 (values from `golden-sample-data.md` revision 3).
+- AC-03a: Given the contract is written, When backend-lead checks it, Then `AppSettings` has 9 fields, each classified Internal, the storage layout reserves the V1.1 widget snapshot outside the main store, `cycleStartDay` has range 1–31 and `cycleStartIsLastDay` defaults to false, and the cases file has at least one row for each of AC-29 to AC-47, AC-43b, AC-43c, AC-46a, AC-46b, AC-46c, AC-51c, AC-51d, AC-51e, AC-54a and AC-65 to AC-71 (values from `golden-sample-data.md` revision 4).
 - AC-03b *edge*: Given a plan field has no class in `security-standard` §2, When the contract is checked, Then CONTRACT_READY is not set and the field is listed in `docs/status.md` Notes for Ton.
 
 **T-03**
@@ -447,7 +464,8 @@ flowchart TD
 - AC-46 *edge* (F11): Given budget nil and spent 33,550, Then status = noBudget; Given budget 0, Then it throws `VALIDATION-BUDGET-01` with no values in the message.
 - AC-46a *edge* (revision 5, F11): Given committedUnpaid −1, When `evaluate` runs, Then it throws `VALIDATION-BUDGET-01` with no values in the message; Given budget 40,000, spent 39,800, committedUnpaid 599 and day 25 of 31, Then leftToSpend = −399 (exact, not clamped to 0), percentUsed = 0.995, status = overPace, overBy is absent and (revision 6, Ton Q-54) billsExceedBy = 399.
 - AC-43c (revision 6, Ton Q-55): Given budget 40,000, spent 0, committedUnpaid 14,447 (Rent 12,000 + Spotify 139 + iPhone installment 1,290 + Netflix 419 + AIS 599, all due in the Dec cycle 25 Nov – 24 Dec 2026) and day 1 of 30, When `evaluate` runs, Then leftToSpend = 25,553, percentUsed = 0, status = onTrack and billsExceedBy is absent.
-- AC-46b *edge* (revision 6, Ton Q-54): Given budget 40,000, spent 40,000, committedUnpaid 599 and day 25 of 31, When `evaluate` runs, Then leftToSpend = −599, status = overPace (1.0 is not > 1) and billsExceedBy = 599; Given spent 41,200 and committedUnpaid 599, Then leftToSpend = −1,799, status = overBudget, overBy = 1,200 and billsExceedBy is absent (caption rule pending Q-61).
+- AC-46b *edge* (revision 6, Ton Q-54): Given budget 40,000, spent 40,000, committedUnpaid 599 and day 25 of 31, When `evaluate` runs, Then leftToSpend = −599, status = overPace (1.0 is not > 1) and billsExceedBy = 599; Given spent 41,200 and committedUnpaid 599, Then leftToSpend = −1,799, status = overBudget, **overBy = 1,799** (revision 7, Ton Q-61: caption "Over budget by ฿1,799", equal to abs(leftToSpend)) and billsExceedBy is absent.
+- AC-46c *edge* (revision 7, Ton Q-60): Given budget 40,000, spent 0, committedUnpaid 15,046 (the 5 Dec-cycle charges 14,447 + the Nov AIS 599 carried because it is still unpaid) and day 1 of 30, When `evaluate` runs, Then leftToSpend = 24,954, percentUsed = 0, status = onTrack, and billsExceedBy and overBy are absent.
 - AC-47: Given budget 40,000, expenses of 33,550 and income of 52,000 in the cycle, When spent is taken from `CashFlow.totals(...).outTotal` and evaluated on day 18 of 30, Then leftToSpend = 6,450 (income does not reduce spend).
 
 **T-17**
@@ -461,6 +479,7 @@ flowchart TD
 - AC-51b *edge* (revision 3): Given leftToSpend 40,000, cycle 2026-11-25 to 2026-12-24 and today 2026-11-25 (first day), When it runs, Then remaining days = 30 and the result is ฿1,333 (40,000 / 30 = 1,333.33, floored; Figma 1I shows ฿1,379).
 - AC-51c (revision 5, Ton Q-51): Given leftToSpend 5,851 (from AC-43b), cycle 2026-10-25 to 2026-11-24 and today 2026-11-18, When `perDayAllowance` runs, Then remaining days = 7 and the result is ฿835 (5,851 / 7 = 835.86, floored); Given today 2026-11-21, Then remaining days = 4 and the result is ฿1,462 (1,462.75 floored). The function never returns 835 × 7 as an amount.
 - AC-51d (revision 6, Ton Q-55): Given leftToSpend 25,553 (from AC-43c), cycle 2026-11-25 to 2026-12-24 and today 2026-11-25, When `perDayAllowance` runs, Then remaining days = 30 and the result is ฿851 (851.77 floored).
+- AC-51e (revision 7, Ton Q-60): Given leftToSpend 24,954 (from AC-46c), the same cycle and today 2026-11-25, When it runs, Then the result is ฿831 (831.8 floored); Given today 2026-11-26, Then remaining days = 29 and the result is ฿860 (860.48 floored).
 - AC-52: Given leftToSpend 6,458.40 and 13 remaining days, When it runs, Then the result is ฿496 (496.80 floored, not ฿497).
 - AC-53 *edge*: Given today = cycle end (2026-11-30) and leftToSpend 1,200, When it runs, Then remaining days = 1 and the result is ฿1,200 (the badge reads "1 day left", Ton Q-48).
 - AC-54 *edge*: Given leftToSpend −1,200 (over budget) or 0, When it runs, Then the result is ฿0; Given today 2026-12-01 with cycle end 2026-11-30, Then it throws `VALIDATION-CYCLE-02` with no values in the message.
@@ -528,9 +547,8 @@ N/A — no KPI.
 | T-21 / T-22 | everything on screen (Confidential, Restricted) | AC-62, AC-64 |
 Threat model: `docs/security/foundation-threats.md` (T-02, backend-lead).
 
-## 9. Open questions (top 3 for this feature; none blocks starting it)
+## 9. Open questions (top 2 for this feature; neither blocks starting it)
 1. **Q-31 Android API 28–32 shield:** "Always shield" needs FLAG_SECURE there, which also blocks user screenshots everywhere. Accept, or accept a best-effort shield on API 28–32? (blocks T-22 only)
-2. **Q-61 Over budget while fixed costs are still set aside** (master plan §8): spent ฿41,200 + unpaid ฿599 gives Left to spend −฿1,799. T-16 returns overBy 1,200 (spent − budget) and no billsExceedBy (AC-46b). Should the Over budget caption read ฿1,200 or ฿1,799? Does not block foundation (both values are returned; only the caption choice is open).
-3. **Q-41 % vs previous month when the previous month is ฿0:** T-19 returns `.notComparable`; how it is shown is decided in E12. Also noted: Ton's ">999%" cap applies to "% vs previous month" only; the budget % has no cap in his answer.
+2. **Q-41 % vs previous month when the previous month is ฿0:** T-19 returns `.notComparable`; how it is shown is decided in E12. Also noted: Ton's ">999%" cap applies to "% vs previous month" only; the budget % has no cap in his answer.
 
-Answered by Ton on 2026-11-21 and applied here: Q-16 (T-18, T-19), Q-04 (T-20, T-21), Q-30 (T-02, T-09). Q-24 Android font stays at the Roboto default (non-blocking). Applied in revision 3 from the CLAUDE.md audit fix record: payday = cycle start (T-02, AC-37a, AC-43a, AC-51a). Applied in revision 4 (decisions file Part 3): Q-15 month-end clamping and "Last day of the month" (T-02, T-09, T-14, AC-38a–AC-38e); Q-48 days left counts today, last day = 1 (T-14 `dayIndex`, AC-53). Applied in revision 5 (decisions file Part 4): Q-53 one shared clamp (T-23, T-14), Q-52 cycle label + previous cycle (T-24), Q-51 B Safe to Spend input (T-16, AC-43b, AC-46a, AC-51c). Applied in revision 6 (decisions file Part 5): Q-55 every fixed-cost kind, Q-58 overdue (T-16 `committedUnpaid`, AC-43c, AC-51d), Q-54 negative Left to spend (T-16 `billsExceedBy`, T-18 max(0, …), AC-46a, AC-46b, AC-54a); Q-56 and Q-57 need no foundation change. Golden figures for case rows: `docs/plan/golden-sample-data.md` revision 3.
+Answered by Ton on 2026-11-21 and applied here: Q-16 (T-18, T-19), Q-04 (T-20, T-21), Q-30 (T-02, T-09). Q-24 Android font stays at the Roboto default (non-blocking). Applied in revision 3 from the CLAUDE.md audit fix record: payday = cycle start (T-02, AC-37a, AC-43a, AC-51a). Applied in revision 4 (decisions file Part 3): Q-15 month-end clamping and "Last day of the month" (T-02, T-09, T-14, AC-38a–AC-38e); Q-48 days left counts today, last day = 1 (T-14 `dayIndex`, AC-53). Applied in revision 5 (decisions file Part 4): Q-53 one shared clamp (T-23, T-14), Q-52 cycle label + previous cycle (T-24), Q-51 B Safe to Spend input (T-16, AC-43b, AC-46a, AC-51c). Applied in revision 6 (decisions file Part 5): Q-55 every fixed-cost kind, Q-58 overdue (T-16 `committedUnpaid`, AC-43c, AC-51d), Q-54 negative Left to spend (T-16 `billsExceedBy`, T-18 max(0, …), AC-46a, AC-46b, AC-54a); Q-56 and Q-57 need no foundation change. Applied in revision 7 (decisions file Part 6): Q-61 full-deficit caption (T-16 `overBy` = −leftToSpend, AC-46b amended), Q-60 carry-forward (no T-16 change; AC-46c, AC-51e show the carried sum); Q-59 and Q-62 need no foundation change. Golden figures for case rows: `docs/plan/golden-sample-data.md` revision 4.

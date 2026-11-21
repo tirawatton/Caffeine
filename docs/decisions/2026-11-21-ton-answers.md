@@ -126,7 +126,7 @@ Source: Ton's answers relayed to `ba` by the main session on 21 Nov 2026, record
 
 ### Naming and glossary
 - Lock **Debts** (paired with Assets), not Liabilities. Lock **Analytics**, not Reports.
-- Thai labels (short, for the Bento cards): Safe to Spend → เงินที่ใช้ได้ · Per day left → ใช้ได้วันละ · Net Cash Flow → กระแสเงินสดสุทธิ · Assets / Debts → ทรัพย์สิน / หนี้สิน · Net Worth → ความมั่งคั่งสุทธิ · Reconcile / Adjust Balance → ปรับยอดให้ตรงบัญชี · Installments → รายการผ่อนชำระ · Commitments → รายการประจำ / บิลล่วงหน้า.
+- Thai labels (short, for the Bento cards): Safe to Spend → เงินที่ใช้ได้ · Per day left → ใช้ได้วันละ · Net Cash Flow → กระแสเงินสดสุทธิ · Assets / Debts → ทรัพย์สิน / หนี้สิน · Net Worth → ความมั่งคั่งสุทธิ · Reconcile / Adjust Balance → ปรับยอดให้ตรงบัญชี · Installments → รายการผ่อนชำระ · Commitments → รายการประจำ / บิลล่วงหน้า (internal term only since Q-57; the Thai UI label for Fixed costs is "รายการประจำ", Q-62 in Part 6).
 
 ### Consequences recorded by `ba` (not new decisions; open points are questions Q-54 to Q-58 in the master plan)
 - `caffeine-domain` still says "Left to spend = budget − sum(expenses in cycle)" and has no cycle label or shared clamp. Q-51 B and Q-52 / Q-53 override it; the skill owner should update it (master plan §5 rules 9, 10, 15).
@@ -154,7 +154,7 @@ Source: Ton's answers to Q-54 to Q-58 relayed to `ba` by the main session on 21 
 - Per day left = **max(0, floor(LeftToSpend / RemainingDays))**, so it reads ฿0/day.
 - Replace the daily pacing helper text with **"Bills exceed budget by ฿399"**.
 - Never mask a deficit as ฿0.
-- **Colour (BA recording note, confirm-item Q-59):** Ton wrote "Alert Red (#FF3B30)". Every earlier design decision maps the spec's #FF3B30 to coral (`night/accent`, plus an icon and a label), and the design rules forbid hard-coded colours. Recorded as **alert / accent red = `night/accent` coral, per the established mapping**, until Ton says otherwise. Coral text on the periwinkle Budget hero is about 1.1:1, so the designer must place the negative figure where it passes contrast (DG-56).
+- **Colour (BA recording note, confirm-item Q-59; confirmed by Ton in Part 6):** Ton wrote "Alert Red (#FF3B30)". Every earlier design decision maps the spec's #FF3B30 to coral (`night/accent`, plus an icon and a label), and the design rules forbid hard-coded colours. Recorded as **alert / accent red = `night/accent` coral, per the established mapping**, until Ton says otherwise. Coral text on the periwinkle Budget hero is about 1.1:1, so the designer must place the negative figure where it passes contrast (DG-56).
 
 ### Q-57 · Naming
 - **"Fixed costs"** stays the user-facing label on every screen.
@@ -165,8 +165,42 @@ Source: Ton's answers to Q-54 to Q-58 relayed to `ba` by the main session on 21 
 - Its badge becomes **Overdue** (alert red → coral, per the Q-54 colour note); the amount stays deducted from Left to spend.
 - Golden 23 Nov 2026, AIS still unpaid: Left to spend ฿5,851, "2 days left", ฿2,925/day, AIS badge "Overdue".
 
-### Consequences recorded by `ba` (open points are questions Q-59 to Q-62 in the master plan)
-- Q-59: confirm `night/accent` coral for "alert red" (negative Left to spend, Overdue badge).
-- Q-60: an overdue fixed cost still unpaid when the cycle ends: carried into the next cycle's set-aside, or released?
-- Q-61: Over budget while fixed costs are still set aside: does the Over budget caption read spent − budget (฿1,200) or include the set-aside (฿1,799)?
-- Q-62: Ton's approved Thai label for "Commitments" (รายการประจำ / บิลล่วงหน้า) now names an internal term; is it also the Thai UI label for "Fixed costs"?
+### Consequences recorded by `ba` (open points are questions Q-59 to Q-62 in the master plan; **all four answered in Part 6**)
+- Q-59: confirm `night/accent` coral for "alert red" (negative Left to spend, Overdue badge). *Answered: yes (Part 6).*
+- Q-60: an overdue fixed cost still unpaid when the cycle ends: carried into the next cycle's set-aside, or released? *Answered: carried (Part 6).*
+- Q-61: Over budget while fixed costs are still set aside: does the Over budget caption read spent − budget (฿1,200) or include the set-aside (฿1,799)? *Answered: ฿1,799, the full deficit (Part 6).*
+- Q-62: Ton's approved Thai label for "Commitments" (รายการประจำ / บิลล่วงหน้า) now names an internal term; is it also the Thai UI label for "Fixed costs"? *Answered: the UI label is "รายการประจำ" alone (Part 6).*
+
+## Part 6 — Cycle carry-forward, deficit caption, alert colour, Thai label (21 Nov 2026, fifth round)
+
+Source: Ton's answers to Q-59 to Q-62, relayed to `ba` by the main session on 21 Nov 2026 and recorded by `ba` as given. Ton also approved a `caffeine-domain` colour edit, which `ba` made the same day in `.claude/skills/caffeine-domain/SKILL.md` and the `.agents/skills/` mirror: income amount text uses `night/income-text`. The same edit added the Q-59, Q-60 and Q-61 rules and their worked examples. Applied in `golden-sample-data.md` revision 4, `glossary.md` revision 4, master plan revision 7 and foundation plan revision 7.
+
+### Q-60 · An overdue fixed cost at the cycle boundary is carried forward (unblocks E11-T19 and E11-T20)
+- When a new cycle starts and an overdue fixed cost is still unpaid, it is **carried into the new cycle's set-aside** until the user taps **Mark paid** or **Skip this cycle**. It is never released automatically on rollover.
+- Golden case: the Dec cycle starts on 25 Nov 2026 and November's AIS bill (฿599, due 22 Nov) is still unpaid. Dec Left to spend = 40,000 − (14,447 + 599) = **฿24,954**, **฿831/day** over 30 days.
+- Reasoning (Ton): (a) it is consistent with Q-58, where overdue unpaid bills stay set aside until the user resolves them. Releasing the amount automatically on rollover (24 → 25 Nov) would inflate Dec's Left to spend while the bill is still owed, and Dec's allowance would drop anyway once the user marks it paid on 26 Nov. (b) The user stays in control: tapping Skip this cycle on the overdue Nov entry releases the ฿599 at once, back to **฿25,553 · ฿851/day**.
+
+### Q-61 · The Over budget caption shows the full deficit (unblocks E03-T04)
+- The caption shows the **full deficit including set-aside fixed costs**, "Over budget by ฿1,799". In every negative state the caption amount equals **abs(Left to spend)**.
+- Reasoning (Ton): the hero number reads −฿1,799 (฿1,200 spent over budget + ฿599 set aside). A caption of ฿1,200 under it would show a ฿599 discrepancy.
+- There are two deficit states:
+  - **State A** (spent ≤ budget; Left to spend goes negative only because of upcoming or overdue fixed costs, Q-54): hero **−฿399**, **฿0/day**, caption **"Bills exceed budget by ฿399"**.
+  - **State B** (spent > budget, with or without pending bills, Q-61): hero **−฿1,799**, **฿0/day**, caption **"Over budget by ฿1,799"**.
+
+### Q-59 · "Alert Red #FF3B30" = coral `night/accent` (confirmed)
+- Yes. "Alert Red #FF3B30" maps to the semantic coral token `night/accent` in every spec and component. The hex is never hard-coded.
+- Reason (Ton): the token adapts across Dark and Light through the `Caffeine / Night` variables.
+- The BA recording note under Q-54 (Part 5) is now confirmed. The contrast condition stands: coral text on the periwinkle Budget hero is about 1.1:1, so DG-56 still has to give the negative figure a placement that passes.
+
+### Q-62 · Thai UI label for "Fixed costs" is "รายการประจำ"
+- The Thai UI label for **Fixed costs** is the single, short label **"รายการประจำ"**. "/ บิลล่วงหน้า" is dropped from every user-facing screen.
+- "รายการประจำ / บิลล่วงหน้า" stays only as the internal Thai term for **Commitments** (Part 4 naming list, Q-57).
+- Reason (Ton): it is short and natural, it covers bills, subscriptions and installments, and it avoids wrapping or truncation in compact containers (tab labels, Home summary cards, badges).
+
+### `caffeine-domain` colour rule (approved)
+- Income amounts and positive deltas drawn as **text** use `night/income-text` (Dark mint/300, Light mint/700, added in the 21 Nov 2026 audit fix pass). Mint **fills** (badges, bars, circles) keep `night/income`.
+
+### Consequences recorded by `ba` (derived from the binding formula, not new decisions)
+- The carried amount is part of `committedUnpaid` (foundation T-16, summed by E11-T19), so the Home hero, the widget snapshot and the forecast all include it. A charge that stays unpaid for several cycles is carried each time, alongside that cycle's own charge for the same bill. In the golden case, the Dec cycle then holds two AIS entries (Nov overdue and Dec upcoming).
+- Mark paid on a carried charge follows Q-56. The expense counts in the cycle of its payment date. Paid on 26 Nov at ฿599: Dec spent ฿599, Left to spend stays ฿24,954, "29 days left", ฿860/day. If the payment date is set back into the closed Nov cycle, the expense counts in Nov and Dec Left to spend becomes ฿25,553.
+- Foundation T-16 `overBy` now equals −leftToSpend (spent − budget + committedUnpaid), so it matches the State B caption. `billsExceedBy` (State A) is unchanged.

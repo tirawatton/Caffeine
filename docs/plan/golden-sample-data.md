@@ -1,7 +1,7 @@
 # Golden sample data
 
-Author: `ba` · 2026-11-21 · **Revision 3** (Ton's answers to Q-54 to Q-58, decisions file Part 5; revision 2 applied Q-51, Q-52, Q-53 and the glossary review)
-Status: **rules approved by Ton; every value final.** Revision 3 removed the ‡ marks: Ton Q-55 sets aside every kind of fixed cost, so the Dec-cycle figure is **฿25,553 · ฿851/day**. New §5 rows: Mark paid at ฿500, Overdue (23 Nov), negative Left to spend (−฿399).
+Author: `ba` · 2026-11-21 · **Revision 4** (Ton's answers to Q-59 to Q-62, decisions file Part 6; revision 3 applied Q-54 to Q-58, revision 2 applied Q-51, Q-52, Q-53 and the glossary review)
+Status: **rules approved by Ton; every value final.** Revision 4 adds §5 rows for the cycle-boundary carry-forward (Ton Q-60: Nov AIS still unpaid on 25 Nov → Dec **฿24,954 · ฿831/day**; Skip → ฿25,553 · ฿851/day; Mark paid on 26 Nov → ฿24,954 · ฿860/day) and the Over budget deficit (Ton Q-61: spent ฿41,200 + AIS unpaid → **−฿1,799**, "Over budget by ฿1,799"). Revision 3 removed the ‡ marks (Dec cycle ฿25,553 · ฿851/day) and added Mark paid at ฿500, Overdue (23 Nov) and negative Left to spend (−฿399).
 
 One deterministic dataset for designers (frame copy), backend-lead (`*-cases.md` rows), developers (previews, seed data in debug builds only) and QA (screenshot and parity checks). Every derived figure below is computed from `caffeine-domain` (updated 21 Nov 2026 with Ton's approval to carry these rules) and master plan §5. **Figma numbers that disagree with this sheet are sample errors to re-sync (DG-51), not rules.** Terms follow `docs/plan/glossary.md`.
 
@@ -11,7 +11,8 @@ Rules used:
 - **Safe to Spend (UI "Left to spend") = Budget − Actual expenses in the cycle − Upcoming & overdue unpaid fixed costs (bills + subscriptions + installments) due in the active cycle** (Ton Q-51 B as widened by Q-55, overdue by Q-58), one formula for Home, the widget snapshot and Forecast.
 - **Mark paid** moves a fixed cost from Reserved to Actual; Left to spend changes only by Scheduled − Actual paid (Ton Q-56, supersedes the Q-21 wording).
 - Days left and per day count today; **per day = max(0, floor(Safe to Spend / days left))**, a display pacing guide only (Ton Q-16, Q-48, Q-51 A, Q-54).
-- Budget % and pace status use **actual spent only**. A negative Safe to Spend shows the exact figure and "Bills exceed budget by ฿x" (Ton Q-54).
+- Budget % and pace status use **actual spent only**. A negative Safe to Spend shows the exact figure, ฿0/day and a caption whose amount is always abs(Safe to Spend): "Bills exceed budget by ฿x" while spent ≤ budget (Ton Q-54), "Over budget by ฿x" once spent > budget (Ton Q-61).
+- An overdue unpaid fixed cost is **carried into the next cycle's set-aside** until Mark paid or Skip this cycle; it is never released by rollover (Ton Q-60).
 - One clamp for every day-of-month rule: `min(targetDay, daysInMonth)`, always snapping back (Ton Q-15, Q-53).
 
 ## 1. Fixed context
@@ -134,7 +135,7 @@ Cut-off 25 and due 10 never need clamping; clamped card examples are in §6.3.
 | Netflix | Subscription | 17th | KBank Credit | ฿419 | Paid 17 Nov (E10) | 17 Dec | 16 Dec |
 | AIS mobile | Bill | 22nd | KBank Savings | ฿599 | **Upcoming, unpaid → set aside in Safe to Spend** | 22 Nov | **21 Nov** |
 
-Totals: ฿14,447 this cycle (subscriptions ฿558 · bills ฿12,599 · installments ฿1,290); paid ฿13,848; remaining ฿599. Reminder dates assume the one-day lead in Ton's approved copy ("due tomorrow"); the E13 plan confirms the lead time. Every kind is set aside while unpaid (Ton Q-55); on 18 Nov only AIS is unpaid. If AIS is still unpaid on 23 Nov its badge reads **"Overdue"** and it stays set aside until Mark paid or Skip this cycle (Ton Q-58; §5).
+Totals: ฿14,447 this cycle (subscriptions ฿558 · bills ฿12,599 · installments ฿1,290); paid ฿13,848; remaining ฿599. Reminder dates assume the one-day lead in Ton's approved copy ("due tomorrow"); the E13 plan confirms the lead time. Every kind is set aside while unpaid (Ton Q-55); on 18 Nov only AIS is unpaid. If AIS is still unpaid on 23 Nov its badge reads **"Overdue"** and it stays set aside until Mark paid or Skip this cycle (Ton Q-58; §5). If it is still unpaid when the Dec cycle starts on 25 Nov, it is carried into the Dec set-aside next to the Dec AIS charge (22 Dec), so the Dec cycle holds two AIS entries (Ton Q-60; §5).
 
 Installment plan: iPhone 17 Pro, ฿12,900 at 0% over 10 months = ฿1,290 / month, charged to KBank Credit on the 10th from 10 Oct 2026. On 18 Nov: **"2 of 10"** paid, next 10 Dec 2026, last payment **10 Jul 2027**, remaining ฿10,320 (8 × 1,290). Each monthly charge is the expense; the ฿12,900 purchase is never expensed in one go (dataset assumption for the E11 contract).
 
@@ -149,7 +150,7 @@ Horizon = the current cycle end, **24 Nov 2026** ("Balance on 24 Nov").
 | Daily spending | label "฿835/day × 7 days" (same per day and days left as Home); **amount = exact remaining variable budget (Safe to Spend), not 835 × 7** (Ton Q-51 A) | −฿5,851 |
 | **Balance on 24 Nov** | 56,898 + 0 − 599 − 0 − 5,851 | **฿50,448 · On track** |
 
-AIS is counted once: it is the Fixed bills line and is already excluded from the ฿5,851 (Ton Q-51 B). Fixed bills + daily spending = 599 + 5,851 = ฿6,450 = budget − spent. The label's 835 × 7 = ฿5,845 is never used as an amount.
+AIS is counted once: it is the Fixed bills line and is already excluded from the ฿5,851 (Ton Q-51 B). A charge carried from an earlier cycle (Ton Q-60) is overdue, so it is in this line too while it is unpaid and paid from cash or bank. Fixed bills + daily spending = 599 + 5,851 = ฿6,450 = budget − spent. The label's 835 × 7 = ฿5,845 is never used as an amount.
 
 Shortfall example (9K): Cash & bank ฿5,000 with the same lines → 5,000 − 599 − 5,851 = **−฿1,450 · Shortfall**.
 
@@ -162,9 +163,15 @@ Shortfall example (9K): Cash & bank ฿5,000 with the same lines → 5,000 − 5
 | AIS paid less than scheduled | 22 Nov 2026, Mark paid ฿500 | Spent ฿34,050 · variance 599 − 500 = +฿99 → Left **฿5,950** · 85% (85.125%) · "3 days left" · ฿1,983/day (1,983.33) · On track (Ton Q-56) |
 | AIS overdue | 23 Nov 2026, AIS still unpaid, nothing new spent | Spent ฿33,550 · set aside ฿599 (Overdue, Ton Q-58) · Left **฿5,851** · 84% · "2 days left" · **฿2,925/day** (2,925.5) · elapsed 30 / 31 = 96.8% → On track · AIS badge **"Overdue"** |
 | AIS skipped | 23 Nov 2026, AIS overdue, user taps Skip this cycle | Set aside ฿0, no expense · Spent ฿33,550 · Left **฿6,450** · "2 days left" · ฿3,225/day · 84% · On track |
-| Negative Left to spend (variant) | 18 Nov 2026, spent ฿39,800 (the dataset plus ฿6,250 more variable spending), AIS ฿599 unpaid | Left 40,000 − 39,800 − 599 = **−฿399** (exact, alert colour) · 99% (99.5%, 99% rule) · Over pace (99.5% > 80.6%) · "7 days left" · **฿0/day** (max(0, floor(−399 / 7))) · helper **"Bills exceed budget by ฿399"** (Ton Q-54) |
+| Negative Left to spend, State A (variant) | 18 Nov 2026, spent ฿39,800 (the dataset plus ฿6,250 more variable spending), AIS ฿599 unpaid | Left 40,000 − 39,800 − 599 = **−฿399** (exact, alert colour) · 99% (99.5%, 99% rule) · Over pace (99.5% > 80.6%) · "7 days left" · **฿0/day** (max(0, floor(−399 / 7))) · caption **"Bills exceed budget by ฿399"** (Ton Q-54) |
+| Over budget with a bill set aside, State B (variant) | 18 Nov 2026, spent ฿41,200 (the dataset plus ฿7,650 more variable spending), AIS ฿599 unpaid | Left 40,000 − 41,200 − 599 = **−฿1,799** (exact) · 103% · **Over budget** · "7 days left" · **฿0/day** · caption **"Over budget by ฿1,799"** (= abs(Left), Ton Q-61) · detail "of ฿40,000 · ฿41,200 spent" |
+| Over budget, nothing set aside, State B (variant) | 18 Nov 2026, spent ฿41,200, no fixed cost unpaid (or E11 not shipped) | Left **−฿1,200** · 103% · Over budget · **฿0/day** · caption **"Over budget by ฿1,200"** |
 | Last day of the cycle | 24 Nov 2026; AIS ฿599 paid 22 Nov, nothing else spent | Left ฿5,851 · **"1 day left"** · ฿5,851/day · 85% · On track (elapsed 31 / 31 = 100%) |
 | First day of the next cycle | 25 Nov 2026, salary +฿52,000 received, nothing spent, AIS for Nov paid on 22 Nov | Label **"Dec cycle · 25 Nov – 24 Dec"** (30 days) · 0% · **"30 days left"** · On track · set aside (every kind, Ton Q-55): Rent 1 Dec ฿12,000, Spotify 3 Dec ฿139, iPhone 10 Dec ฿1,290, Netflix 17 Dec ฿419, AIS 22 Dec ฿599 = ฿14,447 → Left **฿25,553** · **฿851/day** (851.77). (The Bills-only option ฿27,401 · ฿913/day and the old ฿40,000 · ฿1,333/day are superseded.) |
+| First day of the next cycle, Nov AIS still unpaid (carried) | 25 Nov 2026, salary received, nothing spent, the Nov AIS (due 22 Nov) was never paid or skipped | Dec cycle, 30 days · set aside = the 5 Dec charges ฿14,447 + the carried Nov AIS ฿599 = **฿15,046** · Left 40,000 − 0 − 15,046 = **฿24,954** · **฿831/day** (831.8) · 0% · On track · Fixed costs shows two AIS rows: Nov "Overdue", Dec upcoming 22 Dec (Ton Q-60). Not released on rollover (the released figure ฿25,553 is wrong here) |
+| Carried charge skipped | 25 Nov 2026, same as above, user taps Skip this cycle on the overdue Nov AIS | Set aside ฿14,447, no expense · Left **฿25,553** · **฿851/day** · 0% · On track (Ton Q-60) |
+| Carried charge marked paid | 26 Nov 2026, Mark paid ฿599 on the overdue Nov AIS from KBank Savings, payment dated 26 Nov | Dec spent ฿599 · set aside ฿14,447 · variance 0 → Left **฿24,954 (unchanged)** · "29 days left" · **฿860/day** (860.48) · 1% (1.4975%) · On track (elapsed 2 / 30 = 6.7%) · KBank Savings −฿599 |
+| Carried charge paid with a back-dated payment | 26 Nov 2026, Mark paid ฿599 on the Nov AIS with the payment date set to 24 Nov (closed Nov cycle) | The expense counts in the Nov cycle (Nov spent ฿34,149) · Dec spent ฿0 · set aside ฿14,447 → Dec Left **฿25,553** · "29 days left" · ฿881/day (881.14) · 0% · On track (derived from the binding formula; dates by payment date) |
 | No payday set (1st-of-month cycle), 18 Nov | Same Nov expenses on a 1–30 Nov cycle: E2–E14 = ฿29,350; AIS ฿599 unpaid (Rent, Spotify, iPhone, Netflix already paid in Nov) | Label "Nov cycle · 1 Nov – 30 Nov" · Left 40,000 − 29,350 − 599 = **฿10,051** · 73% (73.375%) · 13 days left · **฿773/day** (773.15) · elapsed 18 / 30 = 60% → Over pace · forecast horizon 30 Nov, daily line "฿773/day × 13 days" −฿10,051 |
 | New user | O5 budget ฿40,000, payday 25, onboarding finished 18 Nov, no fixed costs | Left ฿40,000 · 0% · 7 days left · **฿5,714/day** · On track · Wallet holds Cash ฿0 |
 
