@@ -1,19 +1,35 @@
 # foundation — plan (E00 of the master plan)
 
-Author: `ba` · 2026-11-21 · Platform scope: **Both** · Priority: **Must** · Release: V1.0 (foundation, built first)
+Author: `ba` · 2026-11-21 (revision 6) · Platform scope: **Both** · Priority: **Must** · Release: V1.0 (foundation, built first)
 Brief source: Ton's master-plan request of 2026-11-21 (main session) and `docs/plan/caffeine-app-master-plan.md` §E00. There is no `docs/briefs/foundation-brief.md` yet. Ton owns briefs; the conductor can write one from §1–§2 below for Ton to confirm.
 Decisions applied: `docs/decisions/2026-11-21-ton-answers.md`, covering Q-16 rounding (T-18, T-19), Q-04 splash / shield (T-20 to T-22) and Q-30 split storage (T-02, T-09). Since revision 3 also the v5.1 audit fix pass recorded in CLAUDE.md ("v5.1 — UX/UI audit fix pass (21 Nov 2026)") and `docs/design/tokens-changelog.md`: budget cycle = payday, new and changed tokens. Release: part of **V1.0**.
 
-## Readiness checklist (revision 4, after Ton's second-round answers; Verify pass 1 of 3)
-1. PASS: every task (T-01 to T-22) has all 8 fields.
-2. PASS: every AC is Given / When / Then with concrete values and no vague words.
-3. PASS: every task has at least one error or edge AC (marked *edge*).
-4. PASS: every flow branch (F1 to F14) is referenced by at least one AC (see the table after the flow).
-5. PASS: no dependency cycles and no duplicate tasks (order: T-01, T-02 → T-03, T-04 → T-05 … T-17).
-6. PASS: every number agrees with `caffeine-domain` and Ton Q-16 (half-up rounding, signed amounts, transfers excluded, pace status with `<=`, elapsed includes today, device timezone, per day counts today: ฿921 = floor(6,450 / 7) in the payday cycle 25 Oct–24 Nov on 18 Nov, not Figma's ฿1,075).
-7. PASS: every screen state maps to a v5.1 frame or is listed as a Design gap (DG-01, DG-22, DG-23, DG-26).
+## Readiness checklist (revision 6, after Ton's fourth-round answers Q-54 to Q-58; Verify pass 1 of 3)
+Revision 6 re-ran all 9 checks: **9/9 PASS on pass 1.** Check 1: no task added; T-16 and T-18 keep all 8 fields. Check 2: AC-43c, AC-46b, AC-51d, AC-54a are Given / When / Then with concrete values. Check 3: the new ACs are edge cases of T-16 / T-18. Check 4: no new flow branch (F11 covers the negative case through AC-46b). Check 5: no new dependency. Check 6: every figure re-derived from the updated `caffeine-domain` (40,000 − 14,447 = 25,553 → ฿851/day; 40,000 − 39,800 − 599 = −399 → ฿0/day, billsExceedBy 399). Check 7: no new screen in this feature (the hero copy is E03, DG-56). Check 8: N/A — no KPI. Check 9: the security rows for T-16 / T-18 cover the new values (Confidential, in memory only; errors carry no values).
+
+**Revision 6** (2026-11-21, Ton's answers Q-54 to Q-58, decisions file Part 5; `caffeine-domain` updated with Ton's approval):
+- Q-55 / Q-58: `committedUnpaid` = upcoming **and overdue** unpaid fixed costs of **every kind** (bills, subscriptions, installments) due in the active cycle (T-16 text). Foundation still only computes; the sum comes from E11-T19. New AC-43c (Dec cycle 25,553) and AC-51d (฿851/day).
+- Q-54: T-16 returns `billsExceedBy` (= −leftToSpend) when leftToSpend < 0 and spent ≤ budget; T-18 confirms `max(0, floor(...))`. AC-46a now names the output; new AC-46b, AC-54a.
+- Q-56 (Mark paid variance) needs no foundation change: T-16 recomputes from the new spent and the new committed sum (E11 ACs).
+- The skill now carries master plan §5 rules 9, 10 and 15, so check 6 reads `caffeine-domain` directly.
+
+## Readiness checklist (revision 5, after Ton's third-round answers Q-51 / Q-52 / Q-53; Verify pass 2 of 3)
+1. PASS: every task (T-01 to T-24) has all 8 fields (new T-23 shared month-day clamp, T-24 cycle label + previous cycle).
+2. PASS: every AC is Given / When / Then with concrete values and no vague words (new AC-43b, AC-46a, AC-65 to AC-71 checked).
+3. PASS: every task has at least one error or edge AC (marked *edge*); T-23: AC-66, AC-67, AC-68; T-24: AC-70, AC-71.
+4. PASS: every flow branch (F1 to F14) is referenced by at least one AC; no new branch (the new domain errors are F11: AC-46a, AC-68, AC-71).
+5. PASS: no dependency cycles and no duplicate tasks. New edges: T-23 → T-14 → T-24, T-16 unchanged (T-02, T-14, T-15), T-17 now also waits for T-23 and T-24. T-23 depends only on T-02, so no cycle. T-24 is not a duplicate of T-14 (T-14 finds the cycle; T-24 names it and steps back one cycle).
+6. PASS: every number agrees with `caffeine-domain` **as amended by Ton's binding decisions** (Q-16, Q-48, Q-15, Q-51 B, Q-52, Q-53; master plan §5 rules 9, 10, 15): half-up rounding, signed amounts, transfers excluded, pace status with `<=` on actual spent, elapsed and days left include today, device timezone. Safe to Spend = 40,000 − 33,550 − 599 = ฿5,851 (AC-43b), per day floor(5,851 / 7) = ฿835 (AC-51c), clamp dates in AC-65 to AC-67 match `golden-sample-data.md` §6. Where the skill text still says "budget − expenses", the decision record wins (recorded in master plan §5 rule 15).
+7. PASS: every screen state maps to a v5.1 frame or is listed as a Design gap (DG-01, DG-22, DG-23, DG-26). T-23 / T-24 have no screen in this feature (their labels are drawn by E03 / E07 / E12, design impact DG-54).
 8. PASS: Analytics says "N/A — no KPI".
-9. PASS: every task that touches user data names its data classes and has a security AC (§8).
+9. PASS: every task that touches user data names its data classes and has a security AC (§8; T-23 and T-24 added: AC-68, AC-71).
+
+**Revision 5** (2026-11-21, Ton's answers to Q-51, Q-52, Q-53; decisions file Part 4):
+- Q-53: one shared clamp `DayClamp.clamp(year, month, day)` for payday, recurring commitments and card cut-off / due days → new **T-23**; T-14 now calls it.
+- Q-52: Home, Analytics and the History default use the budget cycle, labelled by the closing month → new **T-24** `BudgetCycle.label` and `BudgetCycle.previous` (replaces the "possible `BudgetCycle.label`" in the old Q-52 note).
+- Q-51 B: Safe to Spend = budget − spent − upcoming unpaid fixed bills in the cycle → **T-16** gains the input `committedUnpaid` (the sum is supplied by E11-T19; foundation only computes). New AC-43b, AC-46a; T-18 gains AC-51c. Budget % and status stay on actual spent.
+- AC-03a extended to the new case rows.
+- Verify pass 1 failed check 5: T-17 (QA) did not list T-23 / T-24 in its dependencies, so the new functions would have had no independent verification. Fixed. Pass 2: 9/9 PASS.
 
 **Revision 4** (2026-11-21, Ton's second-round answers, decisions file Part 3): Q-15 is answered, so payday / cycle start is now 1–31 with month-end clamping plus a "Last day of the month" option. Changed: §2 non-goals, T-02 (`cycleStartDay` 1–31 + new `cycleStartIsLastDay`, 9 fields), T-09, T-14 (clamping), AC-03a, AC-18, AC-19, AC-38, new AC-38a–AC-38e, T-14 definition of done, §9. Q-48 confirmed AC-51a / AC-53 (days left counts today, last day = 1). No task added or removed; no new flow branch. Checklist re-run: 9/9 PASS on pass 1.
 
@@ -84,7 +100,7 @@ flowchart TD
 | F8 Android back | AC-09 |
 | F9 offline | AC-26 |
 | F10 privacy mask | AC-33 |
-| F11 domain validation | AC-19, AC-38, AC-46 |
+| F11 domain validation | AC-19, AC-38, AC-46, AC-46a, AC-68, AC-71 |
 | F12 splash | AC-59, AC-60 |
 | F13 background shield | AC-62, AC-63, AC-64 |
 | F14 launch gate | AC-61 |
@@ -225,9 +241,9 @@ flowchart TD
 ### T-14 Budget cycle boundaries
 - **purpose:** Compute which monthly cycle a moment belongs to, in the device timezone.
 - **layer:** Domain
-- **what to build:** `BudgetCycle.containing(instant, rule, timeZone)` → first and last local date (inclusive) and days in cycle, where `rule` is `.day(n)` (n = 1–31) or `.lastDayOfMonth`. **Month-end clamping (Ton Q-15):** a month's payday is min(n, days in that month), so 29–31 snap back to the last valid day of a shorter month and never roll into the next month; `.lastDayOfMonth` resolves to each month's final day. The cycle runs from the payday on or before the local date of `instant` to the day before the next month's payday. `BudgetCycle.dayIndex(today)` → days elapsed (including today) and **days left** (including today: (cycle end − today) + 1, Ton Q-48; this is the Home badge count and the per-day divisor).
+- **what to build:** `BudgetCycle.containing(instant, rule, timeZone)` → first and last local date (inclusive) and days in cycle, where `rule` is `.day(n)` (n = 1–31) or `.lastDayOfMonth`. **Month-end clamping (Ton Q-15):** a month's payday is `DayClamp.clamp(year, month, n)` from **T-23** (min(n, days in that month)), so 29–31 snap back to the last valid day of a shorter month and never roll into the next month; `.lastDayOfMonth` resolves to each month's final day. T-14 must not contain its own clamp code (Ton Q-53: one shared function). The cycle runs from the payday on or before the local date of `instant` to the day before the next month's payday. `BudgetCycle.dayIndex(today)` → days elapsed (including today) and **days left** (including today: (cycle end − today) + 1, Ton Q-48; this is the Home badge count and the per-day divisor).
 - **error behaviour:** `.day(n)` with n outside 1–31 throws `VALIDATION-CYCLE-01`, with no date in the message.
-- **depends on:** T-02
+- **depends on:** T-02, T-23
 - **platform:** Both
 - **priority:** Must
 - **definition of done:** AC-34 to AC-38, AC-37a and AC-38a to AC-38e pass on both platforms with the T-02 case rows.
@@ -245,32 +261,32 @@ flowchart TD
 ### T-16 Budget status
 - **purpose:** One shared function for the Budget hero's numbers and status.
 - **layer:** Domain
-- **what to build:** `BudgetStatus.evaluate(budget: Decimal?, spent: Decimal, daysElapsed, daysInCycle)` returns `leftToSpend = budget − spent`, `percentUsed = spent / budget` (exact Decimal, not rounded), `elapsed = daysElapsed / daysInCycle`, `status` (`onTrack` when percentUsed <= elapsed; `overPace` when percentUsed > elapsed and <= 1; `overBudget` when > 1; `noBudget` when budget is nil), and `overBy = spent − budget` when overBudget. `spent` is the sum of expenses only (from T-15 `outTotal`); income never reduces it. Per-day allowance and % display are in T-18 and T-19.
-- **error behaviour:** budget <= 0, spent < 0, or daysElapsed outside 1…daysInCycle throws `VALIDATION-BUDGET-01`, with no values in the message.
+- **what to build:** `BudgetStatus.evaluate(budget: Decimal?, spent: Decimal, committedUnpaid: Decimal = 0, daysElapsed, daysInCycle)` returns `leftToSpend = budget − spent − committedUnpaid` (**Safe to Spend, Ton Q-51 B**; revision 6: `committedUnpaid` = the sum of upcoming **and overdue** unpaid fixed costs of **every kind** (bills, subscriptions, installments, whatever the paying account) due in the active cycle (Ton Q-55, Q-58), computed by E11-T19 and passed in; 0 until E11 ships), `percentUsed = spent / budget` (exact Decimal, not rounded; actual spent only, `committedUnpaid` is not added), `elapsed = daysElapsed / daysInCycle`, `status` (`onTrack` when percentUsed <= elapsed; `overPace` when percentUsed > elapsed and <= 1; `overBudget` when > 1; `noBudget` when budget is nil), and `overBy = spent − budget` when overBudget. `spent` is the sum of expenses only (from T-15 `outTotal`); income never reduces it. `leftToSpend` may be negative while spent ≤ budget (set-aside fixed costs larger than what is left); the function returns the exact value (never clamped to 0) and, revision 6 (Ton Q-54), `billsExceedBy = −leftToSpend` when leftToSpend < 0 and status is `onTrack` or `overPace` (absent otherwise), which feeds the hero helper "Bills exceed budget by ฿x" in E03. When status is `overBudget`, `overBy` stays spent − budget and `billsExceedBy` is absent until Ton answers Q-61. Per-day allowance and % display are in T-18 and T-19; the Forecast (E18) uses this same `leftToSpend` as its daily-spending amount (Ton Q-51 A).
+- **error behaviour:** budget <= 0, spent < 0, committedUnpaid < 0, or daysElapsed outside 1…daysInCycle throws `VALIDATION-BUDGET-01`, with no values in the message.
 - **depends on:** T-02, T-14, T-15
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-43 to AC-47, AC-43a and AC-44a pass on both platforms.
+- **definition of done:** AC-43 to AC-47, AC-43a, AC-43b, AC-43c, AC-44a, AC-46a and AC-46b pass on both platforms.
 
 ### T-17 QA: shell smoke, parity and security checks
 - **purpose:** Verify both apps independently: shell behaviour, identical domain results, security baseline.
 - **layer:** Platform
 - **what to build:** Owner `qa-engineer`. In `qa-automation/tests/test_tab_shell.py` (one body, both platforms), replace the `root.title` smoke with the tab shell checks. Run every `foundation-cases.md` row on both platforms and compare. Run the MASTG checks from `qa-verification` step 6 for storage, crypto, network and backup.
 - **error behaviour:** Any mismatch → BLOCKED, routed by the conductor table (developer, or backend-lead when both match the contract but differ).
-- **depends on:** T-05 to T-16, T-18 to T-21 (T-22 is verified once Q-31 unblocks it)
+- **depends on:** T-05 to T-16, T-18 to T-21, T-23, T-24 (T-22 is verified once Q-31 unblocks it)
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-48 to AC-50 pass, every revision-2 AC (AC-51 to AC-64) and revision-3 AC (AC-37a, AC-43a, AC-44a, AC-51a, AC-51b) passes on both platforms, and `docs/review/foundation-qa.md` is written.
+- **definition of done:** AC-48 to AC-50 pass, every revision-2 AC (AC-51 to AC-64), revision-3 AC (AC-37a, AC-43a, AC-44a, AC-51a, AC-51b), revision-4 AC (AC-38a–AC-38e), revision-5 AC (AC-43b, AC-46a, AC-51c, AC-65 to AC-71) and revision-6 AC (AC-43c, AC-46b, AC-51d, AC-54a) passes on both platforms, and `docs/review/foundation-qa.md` is written.
 
 ### T-18 Per-day allowance (Ton Q-16)
 - **purpose:** One shared rule for "฿x a day left" on the Budget hero.
 - **layer:** Domain
-- **what to build:** `BudgetStatus.perDayAllowance(leftToSpend, today, cycleEnd)`. Remaining days = (cycleEnd − today) + 1, so today counts and the divisor on the last day is 1. Result = floor(leftToSpend / remainingDays) to whole baht. If leftToSpend <= 0, the result is ฿0.
+- **what to build:** `BudgetStatus.perDayAllowance(leftToSpend, today, cycleEnd)`. Remaining days = (cycleEnd − today) + 1, so today counts and the divisor on the last day is 1. Result = **max(0, floor(leftToSpend / remainingDays))** to whole baht (Ton Q-16, Q-54): if leftToSpend <= 0, the result is ฿0.
 - **error behaviour:** today after cycleEnd throws `VALIDATION-CYCLE-02`, with no values in the message.
 - **depends on:** T-02, T-14, T-16
 - **platform:** Both
 - **priority:** Must
-- **definition of done:** AC-51 to AC-54, AC-51a and AC-51b pass on both platforms with the case rows.
+- **definition of done:** AC-51 to AC-54, AC-51a, AC-51b, AC-51c, AC-51d and AC-54a pass on both platforms with the case rows.
 
 ### T-19 Percentage display rules (Ton Q-16)
 - **purpose:** One shared rule for the budget % and the "% vs previous month" figures.
@@ -314,6 +330,26 @@ flowchart TD
 - **priority:** Should
 - **definition of done:** The AC-64 check passes on an API 30 emulator using the method from Q-31.
 
+### T-23 Shared month-day clamp (Ton Q-53, Q-15)
+- **purpose:** One function that resolves any "day N of the month" rule, used by payday cycles, recurring commitments and card cut-off / due days.
+- **layer:** Domain
+- **what to build:** `DayClamp.clamp(year, month, day) -> LocalDate` = the date with day-of-month min(day, days in that month) (Gregorian, leap years included); it always snaps **back** and never rolls into the next month. `DayClamp.nextOccurrence(anchorDay, onOrAfter: LocalDate) -> LocalDate` = the first clamped date on or after the given date, computed from the stored anchor each month, so a 31st rule gives 28 Feb then 31 Mar (no drift). This is the only clamp code in either app: T-14 (payday), E11 / E16 (recurring commitments and income) and E10-T13 (card cut-off and due) call it. A grep gate in review finds no other `min(…, daysInMonth)` / `lengthOfMonth()` clamp outside `DayClamp`.
+- **error behaviour:** day outside 1–31 or month outside 1–12 throws `VALIDATION-DAY-01`, with no date in the message.
+- **depends on:** T-02
+- **platform:** Both
+- **priority:** Must
+- **definition of done:** AC-65 to AC-68 pass on both platforms with the T-02 case rows (`golden-sample-data.md` §6.2, §6.3).
+
+### T-24 Cycle label and previous cycle (Ton Q-52)
+- **purpose:** Name a budget cycle the same way on every screen and find the cycle to compare with.
+- **layer:** Domain
+- **what to build:** `BudgetCycle.label(cycle) -> CycleLabel` with `long` = "<Mon> cycle · <d Mon> – <d Mon>" (closing month = month of the cycle's last day; English 3-letter month abbreviations; day without a leading zero; U+00B7 middle dot and U+2013 en dash, each with a space on both sides) and `short` = "<Mon> cycle"; `comparison` = "vs <Mon> cycle" built from the previous cycle's closing month. Screens render `long` in their own text style (Caption Upper makes it upper case; the string itself is sentence case). `BudgetCycle.previous(cycle, rule)` → the cycle that ends the day before `cycle` starts, using T-14 / T-23. Year display for past-year cycles and the Thai format come from ux-ui-designer (DG-54) and Q-19; this task covers English only.
+- **error behaviour:** a cycle whose first date is after its last date throws `VALIDATION-CYCLE-03`, with no date in the message.
+- **depends on:** T-14
+- **platform:** Both
+- **priority:** Must
+- **definition of done:** AC-69 to AC-71 pass on both platforms with identical strings.
+
 ## 5. Acceptance criteria
 
 **T-01**
@@ -324,7 +360,7 @@ flowchart TD
 - AC-03 *edge*: Given `night/bg-clear` is renamed in Figma, When generation runs, Then it stops with "missing token: night/bg-clear", and the previously generated files are unchanged byte for byte.
 
 **T-02**
-- AC-03a: Given the contract is written, When backend-lead checks it, Then `AppSettings` has 9 fields, each classified Internal, the storage layout reserves the V1.1 widget snapshot outside the main store, `cycleStartDay` has range 1–31 and `cycleStartIsLastDay` defaults to false, and the cases file has at least one row for each of AC-29 to AC-47.
+- AC-03a: Given the contract is written, When backend-lead checks it, Then `AppSettings` has 9 fields, each classified Internal, the storage layout reserves the V1.1 widget snapshot outside the main store, `cycleStartDay` has range 1–31 and `cycleStartIsLastDay` defaults to false, and the cases file has at least one row for each of AC-29 to AC-47, AC-43b, AC-43c, AC-46a, AC-46b, AC-51c, AC-51d, AC-54a and AC-65 to AC-71 (values from `golden-sample-data.md` revision 3).
 - AC-03b *edge*: Given a plan field has no class in `security-standard` §2, When the contract is checked, Then CONTRACT_READY is not set and the field is listed in `docs/status.md` Notes for Ton.
 
 **T-03**
@@ -404,10 +440,14 @@ flowchart TD
 **T-16**
 - AC-43: Given budget 40,000, spent 33,550, day 18 of 30, When `evaluate` runs, Then leftToSpend = 6,450, percentUsed = 0.83875, elapsed = 0.6, status = overPace.
 - AC-43a (payday cycle, revision 3): Given budget 40,000, spent 33,550, day 25 of 31, When `evaluate` runs, Then leftToSpend = 6,450, percentUsed = 0.83875, elapsed = 25/31 (0.806…), status = overPace.
+- AC-43b (Safe to Spend, Ton Q-51 B, revision 5): Given budget 40,000, spent 33,550, committedUnpaid 599 (AIS due 22 Nov, unpaid) and day 25 of 31, When `evaluate` runs, Then leftToSpend = 5,851, percentUsed = 0.83875 (the 599 is not added), elapsed = 25/31 and status = overPace.
 - AC-44 *edge*: Given budget 40,000, spent 24,000, day 18 of 30, When `evaluate` runs, Then percentUsed = 0.6 = elapsed and status = onTrack.
 - AC-44a *edge* (revision 3): Given budget 40,000, spent 32,000, day 25 of 31, When `evaluate` runs, Then percentUsed = 0.8 <= elapsed 25/31 and status = onTrack (the Figma 1B frame shows Over pace with this data; code follows the rule).
 - AC-45 *edge*: Given budget 40,000, spent 40,000, day 18 of 30, Then leftToSpend = 0 and status = overPace; Given spent 41,200, Then status = overBudget and overBy = 1,200 (caption "Over budget by ฿1,200").
 - AC-46 *edge* (F11): Given budget nil and spent 33,550, Then status = noBudget; Given budget 0, Then it throws `VALIDATION-BUDGET-01` with no values in the message.
+- AC-46a *edge* (revision 5, F11): Given committedUnpaid −1, When `evaluate` runs, Then it throws `VALIDATION-BUDGET-01` with no values in the message; Given budget 40,000, spent 39,800, committedUnpaid 599 and day 25 of 31, Then leftToSpend = −399 (exact, not clamped to 0), percentUsed = 0.995, status = overPace, overBy is absent and (revision 6, Ton Q-54) billsExceedBy = 399.
+- AC-43c (revision 6, Ton Q-55): Given budget 40,000, spent 0, committedUnpaid 14,447 (Rent 12,000 + Spotify 139 + iPhone installment 1,290 + Netflix 419 + AIS 599, all due in the Dec cycle 25 Nov – 24 Dec 2026) and day 1 of 30, When `evaluate` runs, Then leftToSpend = 25,553, percentUsed = 0, status = onTrack and billsExceedBy is absent.
+- AC-46b *edge* (revision 6, Ton Q-54): Given budget 40,000, spent 40,000, committedUnpaid 599 and day 25 of 31, When `evaluate` runs, Then leftToSpend = −599, status = overPace (1.0 is not > 1) and billsExceedBy = 599; Given spent 41,200 and committedUnpaid 599, Then leftToSpend = −1,799, status = overBudget, overBy = 1,200 and billsExceedBy is absent (caption rule pending Q-61).
 - AC-47: Given budget 40,000, expenses of 33,550 and income of 52,000 in the cycle, When spent is taken from `CashFlow.totals(...).outTotal` and evaluated on day 18 of 30, Then leftToSpend = 6,450 (income does not reduce spend).
 
 **T-17**
@@ -419,9 +459,12 @@ flowchart TD
 - AC-51: Given leftToSpend 6,450, cycle 2026-11-01 to 2026-11-30 and today 2026-11-18, When `perDayAllowance` runs, Then remaining days = 13 and the result is ฿496 (6,450 / 13 = 496.15, floored).
 - AC-51a (payday cycle, revision 3): Given leftToSpend 6,450, cycle 2026-10-25 to 2026-11-24 and today 2026-11-18, When `perDayAllowance` runs, Then remaining days = 7 and the result is ฿921 (6,450 / 7 = 921.43, floored). The Figma hero's "฿1,075" (÷ 6) does not follow Ton Q-16 and is not a test value (master plan DG-48).
 - AC-51b *edge* (revision 3): Given leftToSpend 40,000, cycle 2026-11-25 to 2026-12-24 and today 2026-11-25 (first day), When it runs, Then remaining days = 30 and the result is ฿1,333 (40,000 / 30 = 1,333.33, floored; Figma 1I shows ฿1,379).
+- AC-51c (revision 5, Ton Q-51): Given leftToSpend 5,851 (from AC-43b), cycle 2026-10-25 to 2026-11-24 and today 2026-11-18, When `perDayAllowance` runs, Then remaining days = 7 and the result is ฿835 (5,851 / 7 = 835.86, floored); Given today 2026-11-21, Then remaining days = 4 and the result is ฿1,462 (1,462.75 floored). The function never returns 835 × 7 as an amount.
+- AC-51d (revision 6, Ton Q-55): Given leftToSpend 25,553 (from AC-43c), cycle 2026-11-25 to 2026-12-24 and today 2026-11-25, When `perDayAllowance` runs, Then remaining days = 30 and the result is ฿851 (851.77 floored).
 - AC-52: Given leftToSpend 6,458.40 and 13 remaining days, When it runs, Then the result is ฿496 (496.80 floored, not ฿497).
 - AC-53 *edge*: Given today = cycle end (2026-11-30) and leftToSpend 1,200, When it runs, Then remaining days = 1 and the result is ฿1,200 (the badge reads "1 day left", Ton Q-48).
 - AC-54 *edge*: Given leftToSpend −1,200 (over budget) or 0, When it runs, Then the result is ฿0; Given today 2026-12-01 with cycle end 2026-11-30, Then it throws `VALIDATION-CYCLE-02` with no values in the message.
+- AC-54a *edge* (revision 6, Ton Q-54): Given leftToSpend −399 (from AC-46a), cycle 2026-10-25 to 2026-11-24 and today 2026-11-18, When `perDayAllowance` runs, Then remaining days = 7 and the result is ฿0 (max(0, floor(−399 / 7)) = max(0, −57) = 0), never a negative per-day figure.
 
 **T-19** (Ton Q-16)
 - AC-55: Given spent 33,550 and budget 40,000 (83.875%), When `PercentDisplay.budget` runs, Then 84.
@@ -438,6 +481,17 @@ flowchart TD
 - AC-62 *security*: Given Home is showing, When the app goes to the background, Then `privacy.shield` covers the whole window before the snapshot, and the app-switcher image shows no tab placeholder text and no amount (QA screenshot of the app switcher, iOS and Android API 33+).
 - AC-63 *edge*: Given the shield is showing and App Lock is off, When the app returns to the foreground, Then the shield is removed and the previously selected tab (Wallet in the test) is still selected.
 - AC-64 *edge*: Given Android API 34, When the app is in recents, Then `setRecentsScreenshotEnabled(false)` is in effect (no content in the thumbnail), and FLAG_SECURE is not set (a user screenshot of the foreground app still works).
+
+**T-23** (Ton Q-53, Q-15)
+- AC-65: Given day 31, When `DayClamp.clamp` runs for (2027, 2), (2028, 2), (2027, 4) and (2027, 3), Then the results are 2027-02-28, 2028-02-29, 2027-04-30 and 2027-03-31; Given day 15 and (2027, 2), Then 2027-02-15.
+- AC-66 *edge*: Given day 29 or 30 and (2027, 2), When `clamp` runs, Then the result is 2027-02-28 in both cases (never 2027-03-01 or 2027-03-02); Given day 29 and (2028, 2), Then 2028-02-29.
+- AC-67 *edge* (no drift): Given anchor day 31, When `nextOccurrence` is called with onOrAfter 2027-01-01 and then with the day after each result, Then the results are 2027-01-31, 2027-02-28, 2027-03-31, 2027-04-30, 2027-05-31; Given anchor day 30 (a card due day) and onOrAfter 2027-02-15, Then the result is 2027-02-28, 13 days later (`golden-sample-data.md` §6.3).
+- AC-68 *edge* *security* (F11): Given day 0, day 32 or month 13, When `clamp` runs, Then it throws `VALIDATION-DAY-01` and the message contains no date or day number.
+
+**T-24** (Ton Q-52)
+- AC-69: Given the cycle 2026-10-25 to 2026-11-24, When `BudgetCycle.label` runs, Then `long` = "Nov cycle · 25 Oct – 24 Nov", `short` = "Nov cycle" and `comparison` = "vs Oct cycle"; When `previous` runs with rule `.day(25)`, Then the cycle is 2026-09-25 to 2026-10-24 and its `long` = "Oct cycle · 25 Sep – 24 Oct". Both platforms return byte-identical strings (U+00B7, U+2013).
+- AC-70 *edge*: Given rule `.day(1)` and local date 2026-11-18, Then `long` = "Nov cycle · 1 Nov – 30 Nov"; Given rule `.day(31)` and local date 2027-02-15, Then `long` = "Feb cycle · 31 Jan – 27 Feb" and `previous` is 2026-12-31 to 2027-01-30, "Jan cycle · 31 Dec – 30 Jan"; Given rule `.day(25)` and local date 2027-01-10, Then `long` = "Jan cycle · 25 Dec – 24 Jan" and `comparison` = "vs Dec cycle".
+- AC-71 *edge* *security* (F11): Given a cycle with first date 2026-11-24 and last date 2026-10-25, When `label` runs, Then it throws `VALIDATION-CYCLE-03` and the message contains no date.
 
 ## 6. Screen map
 | State | Journey step | v5.1 Dark node | Light | Notes |
@@ -468,13 +522,15 @@ N/A — no KPI.
 | T-14 / T-15 / T-16 | dates, amounts, budget (Confidential, in memory only) | AC-38, AC-42, AC-46 (errors carry no values) |
 | T-17 | all | AC-50 |
 | T-18 / T-19 | amounts, budget (Confidential, in memory only) | AC-54 (errors carry no values) |
+| T-16 (rev 5) | committed unpaid bills sum (Confidential, in memory only) | AC-46a (error carries no values) |
+| T-23 / T-24 | dates, cycle labels (Confidential, in memory only) | AC-68, AC-71 (errors carry no date) |
 | T-20 | none shown; store init only | AC-60 |
 | T-21 / T-22 | everything on screen (Confidential, Restricted) | AC-62, AC-64 |
 Threat model: `docs/security/foundation-threats.md` (T-02, backend-lead).
 
 ## 9. Open questions (top 3 for this feature; none blocks starting it)
 1. **Q-31 Android API 28–32 shield:** "Always shield" needs FLAG_SECURE there, which also blocks user screenshots everywhere. Accept, or accept a best-effort shield on API 28–32? (blocks T-22 only)
-2. **Q-52 Period labels under a payday cycle** (master plan §8): does a cycle 25 Oct–24 Nov read "Nov", and do History / Analytics periods follow the cycle or the calendar month? If it is the cycle, a `BudgetCycle.label` function joins T-14. Does not block foundation.
+2. **Q-61 Over budget while fixed costs are still set aside** (master plan §8): spent ฿41,200 + unpaid ฿599 gives Left to spend −฿1,799. T-16 returns overBy 1,200 (spent − budget) and no billsExceedBy (AC-46b). Should the Over budget caption read ฿1,200 or ฿1,799? Does not block foundation (both values are returned; only the caption choice is open).
 3. **Q-41 % vs previous month when the previous month is ฿0:** T-19 returns `.notComparable`; how it is shown is decided in E12. Also noted: Ton's ">999%" cap applies to "% vs previous month" only; the budget % has no cap in his answer.
 
-Answered by Ton on 2026-11-21 and applied here: Q-16 (T-18, T-19), Q-04 (T-20, T-21), Q-30 (T-02, T-09). Q-24 Android font stays at the Roboto default (non-blocking). Applied in revision 3 from the CLAUDE.md audit fix record: payday = cycle start (T-02, AC-37a, AC-43a, AC-51a). Applied in revision 4 (decisions file Part 3): Q-15 month-end clamping and "Last day of the month" (T-02, T-09, T-14, AC-38a–AC-38e); Q-48 days left counts today, last day = 1 (T-14 `dayIndex`, AC-53). Golden figures for case rows: `docs/plan/golden-sample-data.md`.
+Answered by Ton on 2026-11-21 and applied here: Q-16 (T-18, T-19), Q-04 (T-20, T-21), Q-30 (T-02, T-09). Q-24 Android font stays at the Roboto default (non-blocking). Applied in revision 3 from the CLAUDE.md audit fix record: payday = cycle start (T-02, AC-37a, AC-43a, AC-51a). Applied in revision 4 (decisions file Part 3): Q-15 month-end clamping and "Last day of the month" (T-02, T-09, T-14, AC-38a–AC-38e); Q-48 days left counts today, last day = 1 (T-14 `dayIndex`, AC-53). Applied in revision 5 (decisions file Part 4): Q-53 one shared clamp (T-23, T-14), Q-52 cycle label + previous cycle (T-24), Q-51 B Safe to Spend input (T-16, AC-43b, AC-46a, AC-51c). Applied in revision 6 (decisions file Part 5): Q-55 every fixed-cost kind, Q-58 overdue (T-16 `committedUnpaid`, AC-43c, AC-51d), Q-54 negative Left to spend (T-16 `billsExceedBy`, T-18 max(0, …), AC-46a, AC-46b, AC-54a); Q-56 and Q-57 need no foundation change. Golden figures for case rows: `docs/plan/golden-sample-data.md` revision 3.

@@ -22,6 +22,7 @@ A gate fails if any mechanical check fails. No reasoning can override a red buil
 |---|---|---|
 | `ba` | Every task has all 8 fields; every AC is Given/When/Then with concrete values; every flow branch covered; no cycles | Is the task atomic enough |
 | `ux-ui-designer` | Every interactive element has a label and id; every text/background pair meets 4.5:1 (3:1 large text and icons) in Dark and Light; hit targets >= 44pt / 48dp; token diff = 0 | Is the copy clear, does it look right |
+| `local-data-engineer` | `verify_queries.py` exit 0 (every query matches the golden sheet, no SELECT *, no SQL money sums, no REAL columns, no unindexed scan); names identical across SQL, @Model, @Entity | Is it the simplest design |
 | `backend-lead` (contract) | Every plan entity modelled; every calculation AC has a case row; migration path defined | Naming, sync shape |
 | `ios-developer` / `android-developer` | Build, unit tests and lint exit 0; every AC maps to a passing test | Which warnings are debt |
 | `qa-engineer` | Same battery re-run independently; every `-cases.md` row equal on both platforms; same Appium test passes on both; screenshots match the spec | Whether a difference is a real divergence |
@@ -57,7 +58,7 @@ Every agent reads `docs/lessons.md` before working. A lesson repeated across 3 f
 
 ## 6. Parallel work and ownership
 
-Parallel pairs never share files: `ux-ui-designer` (Figma, `docs/design/`, generated token files) ∥ `backend-lead` (`docs/data-model/`); `ios-developer` (`ios-app/`) ∥ `android-developer` (`android-app/`). QA owns `qa-automation/` and the `QA` test folders. If a collision happens anyway, run each parallel agent with `isolation: "worktree"` and merge after both finish.
+Parallel pairs never share files: `ux-ui-designer` (Figma, `docs/design/`, generated token files) ∥ `local-data-engineer` (`docs/data-model/<f>-tables|queries|statements.md`, `docs/data-model/sql/`, `scripts/data/`), then `backend-lead` (the rest of `docs/data-model/`, `docs/api/`, `docs/security/`); `ios-developer` (`ios-app/`) ∥ `android-developer` (`android-app/`). QA owns `qa-automation/` and the `QA` test folders. If a collision happens anyway, run each parallel agent with `isolation: "worktree"` and merge after both finish.
 
 ## 7. Honest verification
 

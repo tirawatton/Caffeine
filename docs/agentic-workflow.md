@@ -1,6 +1,6 @@
 # Caffeine — Agentic Team (role-based, 21 Nov 2026)
 
-Refactored on 21 Nov 2026 from 21 stage agents into **6 role agents + Ton**, one agent per responsibility. The old agents and the `ios-pipeline` / `android-pipeline` skills are kept in `_backup/2026-11-21-before-role-team/`.
+Refactored on 21 Nov 2026 from 21 stage agents into **6 role agents + Ton** (a 7th, `local-data-engineer`, joined the backend team the same day), one agent per responsibility. The old agents and the `ios-pipeline` / `android-pipeline` skills are kept in `_backup/2026-11-21-before-role-team/`.
 
 ## The team
 | Role | Agent | One responsibility | Owns (only it writes here) | Model |
@@ -8,6 +8,7 @@ Refactored on 21 Nov 2026 from 21 stage agents into **6 role agents + Ton**, one
 | Product Owner & CEO | **Ton** | Why and when: brief, design approval, production release, open questions | `docs/briefs/` | human |
 | BA | `ba` | The plan: need, scope, flow, tasks, Given/When/Then ACs, screen map, analytics events | `docs/plan/`, `docs/analytics/` | opus |
 | UX/UI Designer | `ux-ui-designer` | The design: **Figma (only writer)**, spec, accessibility check, design tokens | Figma file, `docs/design/`, generated token files, `scripts/tokens/` | opus |
+| Local Data Engineer (backend team, reports to backend-lead) | `local-data-engineer` | Local data design: SwiftData / Room tables, indexes and queries, each query proven on the golden data; personal statements tie-out | `docs/data-model/<f>-tables.md`, `-queries.md`, `-statements.md`, `docs/data-model/sql/`, `scripts/data/` | opus |
 | Backend Engineer, Team Lead | `backend-lead` | Technical integrity: contract (data, API, security threat model) before build; review + beta after QA; `backend/` in Phase 2 | `docs/data-model/`, `docs/api/`, `docs/security/`, `docs/review/<f>-review.md`, `docs/release/`, `backend/` | opus |
 | iOS Developer | `ios-developer` | The iOS app, data to screens, test-first | `ios-app/` (except token files and `Tests/QA/`), `docs/pipeline/ios-status.md` | sonnet |
 | Android Developer | `android-developer` | The Android app, data to screens, test-first | `android-app/` (except token files and `.../qa/` tests), `docs/pipeline/android-status.md` | sonnet |
@@ -22,6 +23,7 @@ Every agent loads its own skills at startup (`skills:` in its frontmatter; the a
 |---|---|---|
 | `ba` | **ba-planning** (plan template, task/AC rules, readiness checklist, analytics privacy) | security-standard, caffeine-domain, loop-engineering |
 | `ux-ui-designer` | **designer** (Figma design loop), **figma-handoff** (spec), **design-tokens** (export), **design-accessibility** (a11y check) | caffeine-domain, loop-engineering |
+| `local-data-engineer` | **local-data-design** (tables), **local-query-design** (the /data:write-query method + verify script), **personal-statements** (the /finance:financial-statements method), swiftdata-patterns, room-patterns | security-standard, caffeine-domain, loop-engineering |
 | `backend-lead` | **data-contract**, **api-contract**, **backend-security**, **code-review**, swiftdata-patterns, room-patterns, fastlane-deployment | security-standard, tdd-workflow, caffeine-domain, loop-engineering |
 | `ios-developer` | the 12 developer topics (table below) | security-standard, api-contract, design-tokens, caffeine-domain, loop-engineering |
 | `android-developer` | the 12 developer topics (table below) | security-standard, api-contract, design-tokens, caffeine-domain, loop-engineering |
@@ -63,7 +65,9 @@ One standard, `security-standard`, applies everywhere: every field is classified
 flowchart TD
   Ton((Ton · PO/CEO)) -->|brief| BA[ba]
   BA -->|PLAN_READY| UX[ux-ui-designer<br/>Figma · spec · a11y · tokens]
-  BA -->|PLAN_READY| LA[backend-lead<br/>A: contract]
+  BA -->|PLAN_READY| LD[local-data-engineer<br/>tables · queries · statements]
+  LD -->|DATA_DESIGN_READY| LA[backend-lead<br/>A: contract]
+  LA -.DATA_RETURNED.-> LD
   UX -.PLAN_RETURNED.-> BA
   LA -.PLAN_RETURNED.-> BA
   UX -->|DESIGN_READY| G1((Ton: design approved))
@@ -97,7 +101,7 @@ Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> set status (hand off)
 - Lessons go to `docs/lessons.md` at the moment of failure; every agent reads it first.
 
 ## Handoff wires (files)
-brief → `docs/plan/<f>-plan.md` → `docs/design/<f>-spec.md` + `img/` + `<f>-a11y.md` + tokens ∥ `docs/data-model/<f>-model.md` + `<f>-cases.md` → **GATE 1** → code + `docs/pipeline/<p>-status.md` → `docs/review/<f>-qa.md` → `docs/review/<f>-review.md` → `docs/release/<f>-release.md` → **GATE 2**.
+brief → `docs/plan/<f>-plan.md` → `docs/design/<f>-spec.md` + `img/` + `<f>-a11y.md` + tokens ∥ (`docs/data-model/<f>-tables.md` + `<f>-queries.md` + `sql/` → `docs/data-model/<f>-model.md`) + `<f>-cases.md` → **GATE 1** → code + `docs/pipeline/<p>-status.md` → `docs/review/<f>-qa.md` → `docs/review/<f>-review.md` → `docs/release/<f>-release.md` → **GATE 2**.
 
 Status clock: `docs/status.md` (main), `docs/pipeline/{ios,android}-status.md` (lanes).
 

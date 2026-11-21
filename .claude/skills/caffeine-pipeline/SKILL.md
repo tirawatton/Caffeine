@@ -1,6 +1,6 @@
 ---
 name: caffeine-pipeline
-description: Conductor for the Caffeine role team. Run in the main session as /caffeine-pipeline <feature> [ios|android|both] [--solo] [resume]. Reads docs/status.md, starts the next role agent(s) (ba, ux-ui-designer, backend-lead, ios-developer, android-developer, qa-engineer) with the Agent tool, routes Feedback to the owner, enforces the 3-attempt budget, and stops at Ton's two gates (design approval, production release). Use when Ton asks to start, continue or resume a feature.
+description: Conductor for the Caffeine role team. Run in the main session as /caffeine-pipeline <feature> [ios|android|both] [--solo] [resume]. Reads docs/status.md, starts the next role agent(s) (ba, ux-ui-designer, local-data-engineer, backend-lead, ios-developer, android-developer, qa-engineer) with the Agent tool, routes Feedback to the owner, enforces the 3-attempt budget, and stops at Ton's two gates (design approval, production release). Use when Ton asks to start, continue or resume a feature.
 argument-hint: <feature> [ios|android|both] [--solo] [resume]
 ---
 
@@ -15,6 +15,7 @@ Subagents cannot start other subagents, so **this skill runs in the main session
 | BA | `ba` | The plan (tasks, ACs, screen map, analytics) |
 | UX/UI | `ux-ui-designer` | Figma (only writer) + spec + accessibility + tokens |
 | Backend Engineer, Team Lead | `backend-lead` | Contract before build; review + beta after QA; `backend/` in Phase 2 |
+| Local Data Engineer (backend team) | `local-data-engineer` | On-device tables + queries (SwiftData / Room), proven on the golden data; personal statements tie-out |
 | iOS | `ios-developer` | The iOS app |
 | Android | `android-developer` | The Android app |
 | QA | `qa-engineer` | Independent verification of both apps |
@@ -29,8 +30,9 @@ Subagents cannot start other subagents, so **this skill runs in the main session
 | # | Status before | Start (Agent tool, subagent_type) | Status after | Ton |
 |---|---|---|---|---|
 | 1 | IDLE / PLAN_RETURNED | `ba` | PLAN_READY | answers open questions |
-| 2 | PLAN_READY | `ux-ui-designer` **and** `backend-lead` (Phase A) — one message, two Agent calls | Notes: DESIGN_READY + CONTRACT_READY | — |
-| — | both READY | **GATE 1.** Show Ton: spec + Dark/Light screenshots, a11y result, gaps, Figma changes, contract summary. Stop. Only Ton's explicit "design approved" sets DESIGN_APPROVED | DESIGN_APPROVED | **approves** |
+| 2 | PLAN_READY | `ux-ui-designer` **and** `local-data-engineer` — one message, two Agent calls | Notes: DESIGN_READY, DATA_DESIGN_READY | — |
+| 2b | Note DATA_DESIGN_READY (designer may still be running) | `backend-lead` (Phase A) | Note: CONTRACT_READY | — |
+| — | both READY | **GATE 1.** Show Ton: spec + Dark/Light screenshots, a11y result, gaps, Figma changes, contract summary (tables, queries and the verify script result). Stop. Only Ton's explicit "design approved" sets DESIGN_APPROVED | DESIGN_APPROVED | **approves** |
 | 3 | DESIGN_APPROVED | `ios-developer` ∥ `android-developer` per scope (one message). `backend-lead` Phase C too if the plan has a sync/API task | `IOS_DONE` / `ANDROID_DONE` in the lane files (+ Note `BACKEND_DONE` when Phase C ran) → set DEV_COMPLETE. A lane at `IOS_BLOCKED` / `ANDROID_BLOCKED` after 3 passes → report to Ton | — |
 | 4 | DEV_COMPLETE | `qa-engineer` | QA_PASSED | — |
 | 5 | QA_PASSED | `backend-lead` (Phase B: review, then beta) | REVIEW_PASSED → RELEASED_TO_BETA | — |
@@ -39,17 +41,18 @@ Subagents cannot start other subagents, so **this skill runs in the main session
 Scope `ios` or `android` skips the other developer; QA marks parity N/A.
 
 ## Solo mode (`--solo`, one platform, Ton working alone)
-`ba` (same checklist) → `ux-ui-designer` only if the plan lists Design gaps → Ton approves → one developer → Ton reviews the developer's report. Skips backend-lead Phase A (the developer follows the existing model and `caffeine-domain`; a new entity or a migration ends solo mode and runs Phase A), QA and beta. Switch to the full team when a second person joins, features ship faster than Ton can review, or an iOS/Android difference reaches a user.
+`ba` (same checklist) → `ux-ui-designer` only if the plan lists Design gaps → Ton approves → one developer → Ton reviews the developer's report. Skips local-data-engineer and backend-lead Phase A (the developer follows the existing model and `caffeine-domain`; a new entity, a new query on a money total, or a migration ends solo mode and runs `local-data-engineer` → Phase A), QA and beta. Switch to the full team when a second person joins, features ship faster than Ton can review, or an iOS/Android difference reaches a user.
 
 ## Feedback routing (who fixes what)
 | Found by | Problem | Status set | Goes to | Then re-run |
 |---|---|---|---|---|
-| ux-ui-designer / backend-lead | Plan can't be designed or modelled | PLAN_RETURNED | `ba` | stage 1 → 2 |
+| ux-ui-designer / local-data-engineer / backend-lead | Plan can't be designed or modelled | PLAN_RETURNED | `ba` | stage 1 → 2 |
+| backend-lead (A) | Table, index or query wrong; verify script fails | Note DATA_RETURNED | `local-data-engineer` | 2 → 2b |
 | developer | Missing state, wrong copy, unbuildable layout | DESIGN_RETURNED | `ux-ui-designer` | GATE 1 if Figma changed, then that developer |
-| developer | Contract missing or contradicts plan | CONTRACT_RETURNED | `backend-lead` (A) | that developer |
+| developer | Contract missing or contradicts plan | CONTRACT_RETURNED | `backend-lead` (A); a missing query → DATA_RETURNED to `local-data-engineer` first | that developer |
 | qa-engineer | Build/test/lint/coverage/id on one platform | BLOCKED (owner) | that developer | QA → lead |
 | qa-engineer | Spec/Figma wrong | BLOCKED (owner ux-ui-designer) | `ux-ui-designer` | GATE 1, developer(s), QA |
-| qa-engineer | Platforms differ, both match contract | BLOCKED (owner backend-lead) | `backend-lead` (A) | developers, QA |
+| qa-engineer | Platforms differ, both match contract | BLOCKED (owner backend-lead) | `backend-lead` (A); a query or reduce-step cause → `local-data-engineer` | developers, QA |
 | backend-lead (B) | CRITICAL/HIGH finding | BLOCKED (owner) | that developer | QA → lead |
 
 ## Starting an agent
