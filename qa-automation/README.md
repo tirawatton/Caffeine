@@ -1,6 +1,6 @@
 # qa-automation
 
-Cross-platform Appium + Pytest suite owned by `qa-parity-tester`. One test body runs against both apps.
+Cross-platform Appium + Pytest suite owned by `qa-engineer`. One test body runs against both apps.
 
 ```bash
 pip install -r requirements.txt

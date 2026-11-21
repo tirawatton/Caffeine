@@ -1,6 +1,6 @@
 ---
 name: appium-parity
-description: The cross-platform Appium + Pytest framework in qa-automation/ - one test, both apps, shared accessibility ids, Page Objects, explicit waits, W3C gestures - and the rule that a test passing on one platform and failing on the other is a blocking divergence. Read by qa-parity-tester and by UI engineers who must expose ids.
+description: The cross-platform Appium + Pytest framework in qa-automation/ - one test, both apps, shared accessibility ids, Page Objects, explicit waits, W3C gestures - and the rule that a test passing on one platform and failing on the other is a blocking divergence. Read by qa-engineer and by both developers, who must expose the ids.
 ---
 
 # Appium Parity Testing
@@ -25,7 +25,7 @@ qa-automation/
 - Seed data through a launch argument (`-uiTestSeed <name>` on iOS, intent extra `uiTestSeed` on Android) so both apps start from the same state.
 
 ## Capabilities
-iOS: XCUITest, iPhone 16/17 simulator, platformVersion 18+. Android: UiAutomator2, emulator API 28 and latest. App paths come from the verifiers' status notes (`.app` from `xcodebuild -derivedDataPath`, `.apk` from `assembleDebug`).
+iOS: XCUITest, iPhone 16/17 simulator, platformVersion 18+. Android: UiAutomator2, emulator API 28 and latest. App paths come from the developers' lane status files (`docs/pipeline/{ios,android}-status.md`) (`.app` from `xcodebuild -derivedDataPath`, `.apk` from `assembleDebug`).
 
 ## Run
 `pytest qa-automation/tests/test_<feature>.py --ios-app-path <path> --android-app-path <path> --html=docs/review/<feature>-qa.html`

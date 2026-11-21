@@ -1,6 +1,6 @@
 ---
 name: tdd-workflow
-description: Red-green-refactor rules for both platforms - what must be test-driven, where tests live, XCTest/Swift Testing and JUnit/coroutines-test conventions. Read by data and UI engineers, verifiers and solo-builder.
+description: Red-green-refactor rules for both platforms - what must be test-driven, where tests live, XCTest/Swift Testing and JUnit/coroutines-test conventions. Read by ios-developer, android-developer and qa-engineer.
 ---
 
 # TDD Workflow
@@ -26,7 +26,7 @@ Pure layout (a View or Composable with no logic). Check those with previews in D
 - ViewModel tests: `runTest` + injected `StandardTestDispatcher` + Turbine for flows; never `Thread.sleep`.
 
 ## Coverage hand-off
-Each engineer lists, in its lane status file, which acceptance criteria its tests cover (`AC-03 -> HomeStoreTests.testOverPace`). The verifier fills gaps; QA does not re-test logic.
+Each developer lists, in its lane status file, which acceptance criteria its tests cover (`AC-03 -> HomeStoreTests.testOverPace`). qa-engineer fills gaps in its own QA test folders and does not re-test logic already covered.
 
 ## Parity tests
 For every domain calculation, add the same table of input/output cases on both platforms (same values, same expected strings). Put the shared table in `docs/data-model/<feature>-cases.md` so both lanes copy identical cases.

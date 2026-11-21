@@ -1,6 +1,6 @@
 ---
 name: swiftdata-patterns
-description: SwiftData rules for Caffeine - @Model conventions, Decimal money, typed predicates, repositories, VersionedSchema migrations, in-memory tests. Read by ios-architect, ios-data-engineer, ios-reviewer.
+description: SwiftData rules for Caffeine - @Model conventions, Decimal money, typed predicates, repositories, VersionedSchema migrations, in-memory tests. Read by ios-developer, backend-lead.
 ---
 
 # SwiftData Patterns

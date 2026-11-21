@@ -1,22 +1,16 @@
-# ios lane status
+# ios lane status (written by ios-developer)
 
 current_feature: none
 status: IOS_IDLE
 
 ## Status values
-IOS_IDLE → IOS_ARCH_DONE → (IOS_DATA_DONE + IOS_UI_DONE) → IOS_VERIFIED → IOS_REVIEW_DONE · IOS_BLOCKED (owner in Notes)
+IOS_IDLE → IOS_IN_PROGRESS → IOS_DONE · IOS_BLOCKED (reason in Notes)
 
-## Persistence (data engineer)
-status:
-AC coverage:
+## Goal (AC → test, PASS/FAIL)
 
-## UI (UI engineer)
-status:
-AC coverage:
-Screens/states done:
-Spec deviations:
+## Platform design (State / Intent / Store-or-ViewModel, navigation, shared components)
 
 ## Verification
-tests: · AC coverage: · lint debt: · tier 2: · artefact:
+build: · tests: · AC coverage: N/N · lint debt: · spec deviations: · artefact:
 
 ## Notes

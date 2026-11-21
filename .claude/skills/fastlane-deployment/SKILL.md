@@ -1,6 +1,6 @@
 ---
 name: fastlane-deployment
-description: Fastlane lanes for both apps (test, beta, release, bump_version), signing rules, and the hard rule that production release never runs without Ton's explicit confirmation in chat. Read by release-engineer.
+description: Fastlane lanes for both apps (test, beta, release, bump_version), signing rules, and the hard rule that production release never runs without Ton's explicit confirmation in chat. Read by backend-lead.
 ---
 
 # Fastlane Deployment

@@ -1,6 +1,6 @@
 ---
 name: caffeine-domain
-description: Platform-neutral business rules for Caffeine (money, signs and colours, budget and pace maths, cycles, validation, categories, transfers). Both iOS and Android must produce identical results. Read by planners, data architect, engineers, verifiers, reviewers and QA.
+description: Platform-neutral business rules for Caffeine (money, signs and colours, budget and pace maths, cycles, validation, categories, transfers). Both iOS and Android must produce identical results. Read by every role agent.
 ---
 
 # Caffeine Domain Rules

@@ -1,6 +1,6 @@
 ---
 name: mvi-android
-description: The Android MVI pattern for Caffeine (immutable State data class, sealed Intent, ViewModel as Store with StateFlow, one-shot Effects channel, Repository interface). Same shape as mvi-ios. Read by android-architect, android-ui-engineer, android-reviewer.
+description: The Android MVI pattern for Caffeine (immutable State data class, sealed Intent, ViewModel as Store with StateFlow, one-shot Effects channel, Repository interface). Same shape as mvi-ios. Read by android-developer and backend-lead (review).
 ---
 
 # MVI on Android (Kotlin, Compose)

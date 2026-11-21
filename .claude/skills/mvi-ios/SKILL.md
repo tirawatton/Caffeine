@@ -1,6 +1,6 @@
 ---
 name: mvi-ios
-description: The iOS MVI pattern for Caffeine (State struct, Intent enum, @MainActor @Observable Store, Repository protocol) - no MVVM, no ObservableObject. Read by ios-architect, ios-ui-engineer, ios-reviewer and solo-builder.
+description: The iOS MVI pattern for Caffeine (State struct, Intent enum, @MainActor @Observable Store, Repository protocol) - no MVVM, no ObservableObject. Read by ios-developer and backend-lead (review).
 ---
 
 # MVI on iOS (Swift 6, iOS 18+)

@@ -1,22 +1,16 @@
-# android lane status
+# android lane status (written by android-developer)
 
 current_feature: none
 status: ANDROID_IDLE
 
 ## Status values
-ANDROID_IDLE → ANDROID_ARCH_DONE → (ANDROID_DATA_DONE + ANDROID_UI_DONE) → ANDROID_VERIFIED → ANDROID_REVIEW_DONE · ANDROID_BLOCKED (owner in Notes)
+ANDROID_IDLE → ANDROID_IN_PROGRESS → ANDROID_DONE · ANDROID_BLOCKED (reason in Notes)
 
-## Persistence (data engineer)
-status:
-AC coverage:
+## Goal (AC → test, PASS/FAIL)
 
-## UI (UI engineer)
-status:
-AC coverage:
-Screens/states done:
-Spec deviations:
+## Platform design (State / Intent / Store-or-ViewModel, navigation, shared components)
 
 ## Verification
-tests: · AC coverage: · lint debt: · tier 2: · artefact:
+build: · tests: · AC coverage: N/N · lint debt: · spec deviations: · artefact:
 
 ## Notes

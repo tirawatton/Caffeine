@@ -1,6 +1,6 @@
 ---
 name: design-tokens
-description: Mapping of Caffeine Figma variables and text styles to iOS (Colors.xcassets + DesignTokens.swift) and Android (CaffeineColors/CaffeineDimens/CaffeineType Kotlin). Token naming, Dark/Light handling, alpha tokens, fonts, and the diff gate. Read by token-sync-engineer and both UI engineers.
+description: Mapping of Caffeine Figma variables and text styles to iOS (Colors.xcassets + DesignTokens.swift) and Android (CaffeineColors/CaffeineDimens/CaffeineType Kotlin). Token naming, Dark/Light handling, alpha tokens, fonts, and the diff gate. Read by ux-ui-designer (generates them) and both developers (use them).
 ---
 
 # Design Tokens
@@ -42,4 +42,4 @@ Read them with `get_variable_defs` (resolve both modes). Never copy hex values f
 - Shadows use `night/shadow` (35% Dark, 12% Light).
 
 ## Gate
-After generating, `token-sync-engineer` re-reads Figma and diffs every token, both modes, against both outputs. Diff must be empty.
+After generating, `ux-ui-designer` re-reads Figma and diffs every token, both modes, against both outputs. Diff must be empty.

@@ -1,6 +1,6 @@
 ---
 name: room-patterns
-description: Room rules for Caffeine - entities matching the logical model, String-backed BigDecimal converter, DAOs with Flow, repository interfaces, explicit migrations, in-memory tests. Read by android-architect, android-data-engineer, android-reviewer.
+description: Room rules for Caffeine - entities matching the logical model, String-backed BigDecimal converter, DAOs with Flow, repository interfaces, explicit migrations, in-memory tests. Read by android-developer, backend-lead.
 ---
 
 # Room Patterns

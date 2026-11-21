@@ -1,77 +1,81 @@
-# Caffeine — Agentic Workflow (iOS + Android, native)
+# Caffeine — Agentic Team (role-based, 21 Nov 2026)
 
-Adapted on 21 Nov 2026 from the reference project `myproject/caffeine-project` (31 agents). Changes from the reference:
-- Orchestrators are **skills run in the main session** (`/caffeine-pipeline`, `/ios-pipeline`, `/android-pipeline`), because Claude Code subagents cannot start other subagents. The reference `*-orchestrator` agents had no way to call their workers.
-- The six-agent UX lane is replaced by a **design handoff lane** (`design-spec-extractor`, `design-governor`, `token-sync-engineer`), because the v5.1 Figma design already exists. New design work still uses the `designer` skill loop with Ton.
-- PM + four BA agents are merged into `product-planner` + `plan-validator`.
-- Design source is this repo's Figma file and `Caffeine / Night` tokens (SF Pro), not the reference `MASTER.md` / Kanit.
-- Retry budget is **3 attempts per gate** (matches the design loop in CLAUDE.md). Minimum OS: **iOS 18**, **Android API 28**.
+Refactored on 21 Nov 2026 from 21 stage agents into **6 role agents + Ton**, one agent per responsibility. The old agents and the `ios-pipeline` / `android-pipeline` skills are kept in `_backup/2026-11-21-before-role-team/`.
 
-## Modes
-- **Solo (default)**: `solo-planner` → `solo-builder`, one platform per pass, no status files.
-- **Team**: `/caffeine-pipeline <feature> <ios|android|both>`. Switch when a second person joins, features ship faster than Ton can review, or an iOS/Android difference reaches a user.
+## The team
+| Role | Agent | One responsibility | Owns (only it writes here) | Model |
+|---|---|---|---|---|
+| Product Owner & CEO | **Ton** | Why and when: brief, design approval, production release, open questions | `docs/briefs/` | human |
+| BA | `ba` | The plan: need, scope, flow, tasks, Given/When/Then ACs, screen map, analytics events | `docs/plan/`, `docs/analytics/` | opus |
+| UX/UI Designer | `ux-ui-designer` | The design: **Figma (only writer)**, spec, accessibility check, design tokens | Figma file, `docs/design/`, generated token files, `scripts/tokens/` | opus |
+| Backend Engineer, Team Lead | `backend-lead` | Technical integrity: contract before build; review + beta after QA; `backend/` in Phase 2 | `docs/data-model/`, `docs/review/<f>-review.md`, `docs/release/`, `backend/` | opus |
+| iOS Developer | `ios-developer` | The iOS app, data to screens, test-first | `ios-app/` (except token files and `Tests/QA/`), `docs/pipeline/ios-status.md` | sonnet |
+| Android Developer | `android-developer` | The Android app, data to screens, test-first | `android-app/` (except token files and `.../qa/` tests), `docs/pipeline/android-status.md` | sonnet |
+| QA Engineer | `qa-engineer` | Independent verification of both apps | `qa-automation/`, QA test folders, `docs/review/<f>-qa.*` | sonnet |
+
+Conductor: the `/caffeine-pipeline` skill in the main session (agents can't start agents). It starts agents and routes Feedback; it does no agent's work and never edits Figma.
+
+## What was merged and why
+| Before (21) | After | Why |
+|---|---|---|
+| product-planner, plan-validator, solo-planner, analytics-engineer | `ba` | One plan, one owner; validation is the BA's own Verify step |
+| design-spec-extractor, design-governor, token-sync-engineer (+ designer skill in the main session) | `ux-ui-designer` | One owner for Figma and everything that leaves it; only it can write Figma |
+| data-architect, ios-reviewer, android-reviewer, release-engineer | `backend-lead` | The lead defines the contract and accepts the code against it |
+| ios-architect, ios-data-engineer, ios-ui-engineer, solo-builder | `ios-developer` | 1 handoff instead of 4; no file-ownership conflicts inside a platform |
+| android-architect, android-data-engineer, android-ui-engineer | `android-developer` | same |
+| ios-verifier, android-verifier, qa-parity-tester | `qa-engineer` | One independent gate for both platforms |
 
 ## Flow
 
 ```mermaid
 flowchart TD
-  Ton((Ton)) -->|brief| C[/caffeine-pipeline<br/>main session/]
-  C --> P[product-planner] --> PV{plan-validator}
-  PV -->|FAIL| P
-  PV --> DA[data-architect] & DS[design-spec-extractor]
-  DS --> DG{design-governor}
-  DA --> DG
-  DG -->|FAIL| DS
-  DG -.KPI.-> AN[analytics-engineer]
-  DG --> TS[token-sync-engineer]
-  TS --> H1((Ton: DESIGN_APPROVED))
-  H1 --> IA[ios-architect] & AA[android-architect]
-  IA --> ID[ios-data-engineer] & IU[ios-ui-engineer]
-  ID & IU --> IV{ios-verifier} --> IR{ios-reviewer}
-  IV & IR -->|BLOCKED| ID
-  AA --> AD[android-data-engineer] & AU[android-ui-engineer]
-  AD & AU --> AV{android-verifier} --> AR{android-reviewer}
-  AV & AR -->|BLOCKED| AD
-  IR & AR --> Q{qa-parity-tester}
-  Q -->|divergence| Ton
-  Q --> R[release-engineer] --> H2((Ton: production))
+  Ton((Ton · PO/CEO)) -->|brief| BA[ba]
+  BA -->|PLAN_READY| UX[ux-ui-designer<br/>Figma · spec · a11y · tokens]
+  BA -->|PLAN_READY| LA[backend-lead<br/>A: contract]
+  UX -.PLAN_RETURNED.-> BA
+  LA -.PLAN_RETURNED.-> BA
+  UX -->|DESIGN_READY| G1((Ton: design approved))
+  LA -->|CONTRACT_READY| G1
+  G1 --> IOS[ios-developer]
+  G1 --> AND[android-developer]
+  IOS -.DESIGN_RETURNED.-> UX
+  AND -.CONTRACT_RETURNED.-> LA
+  IOS -->|IOS_DONE| QA{qa-engineer}
+  AND -->|ANDROID_DONE| QA
+  QA -.BLOCKED owner.-> IOS
+  QA -.BLOCKED owner.-> AND
+  QA -->|QA_PASSED| LB{backend-lead<br/>B: review + beta}
+  LB -.BLOCKED owner.-> IOS
+  LB -->|RELEASED_TO_BETA| G2((Ton: production))
 ```
 
-## How agents connect
-1. **Main session is the conductor.** Only the pipeline skills start agents (Agent tool). Agents never call each other.
-2. **Files are the wires.** Each agent reads the previous stage's file and writes its own:
-   brief → `docs/plan/<f>-plan.md` → `docs/data-model/<f>-model.md` + `<f>-cases.md` and `docs/design/<f>-spec.md` + screenshots → `docs/design/<f>-governance.md` → token files in both apps → `docs/pipeline/<p>-arch-<f>.md` → code + tests → `docs/pipeline/<p>-status.md` → `docs/review/<f>-<p>-review.md` → `docs/pipeline/<p>-feedback-<f>.md` → `docs/review/<f>-qa.md` → `docs/release/<f>-release.md`.
-3. **Status files are the clock.** `docs/status.md` (main), `docs/pipeline/ios-status.md`, `docs/pipeline/android-status.md` (lanes). Each agent checks the status it waits for and sets the next one.
-4. **Gates loop back** with a Feedback list; fixes re-run every gate forward; 3 failures of one gate stop the run for Ton.
-5. **Parallelism**: data-architect ∥ design-spec-extractor; iOS lane ∥ Android lane; inside a lane data engineer ∥ UI engineer (separate folder ownership set by the architect).
-6. **Human gates**: design approval before code; production release.
-7. **Memory**: `docs/lessons.md`, read first, appended at the moment of failure.
+Solid = handoff, dotted = Feedback back to the owner (full routing table in `.claude/skills/caffeine-pipeline/SKILL.md`).
 
-## Agents
-| Agent | Model | Stage | Responsibility | Gate |
-|---|---|---|---|---|
-| product-planner | opus | 1 | Brief → need, scope, flow, atomic tasks, Given/When/Then ACs, screen map | — |
-| plan-validator | sonnet | 2 | Developer-readiness of every task and AC | fields, format, branch coverage |
-| data-architect | opus | 3 | Logical model + SwiftData + Room mappings, repositories, migrations, shared test cases | — |
-| design-spec-extractor | sonnet | 3 | Figma v5.1 frames (Dark + Light) → spec, screenshots, ids, gaps | own checklist |
-| design-governor | opus | 4 | Accessibility, contrast both modes, hit targets, font scaling, privacy | labels, contrast ratios |
-| analytics-engineer | sonnet | 4 (optional) | KPI → event plan, no PII/money | — |
-| token-sync-engineer | sonnet | 5 | Figma variables/styles → xcassets + Swift, Kotlin theme | token diff = 0 |
-| ios-architect / android-architect | opus | lane 1 | MVI contracts, navigation, components, file ownership | — |
-| ios-data-engineer / android-data-engineer | sonnet | lane 2a | SwiftData / Room models, repositories, migrations, TDD | own tests |
-| ios-ui-engineer / android-ui-engineer | sonnet | lane 2b | Screens, Store/ViewModel, components, previews, ids, TDD | own tests |
-| ios-verifier / android-verifier | sonnet | lane 3 | Build, tests, AC coverage, lint, simulator/emulator | exit codes |
-| ios-reviewer / android-reviewer | opus | lane 4 | Read-only review, greps, security, fidelity | greps + severity |
-| qa-parity-tester | sonnet | 7 | Same Appium test on both apps | pass on both |
-| release-engineer | sonnet | 8 | fastlane test + beta, release notes | lane exit codes |
-| solo-planner / solo-builder | sonnet | Solo | Plan and build one platform end to end | own tests |
+## Every agent runs your loop
+```
+Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> set status (hand off)
+                       ^                  |
+                       |                  NO
+                       +----- Fix <--- Feedback
+```
+- **Set Goal**: numbered PASS/FAIL criteria at the top of the agent's output file.
+- **Verify**: mechanical checks first (checklists, contrast, token diff, build/test/lint exit codes, greps), judgment second.
+- **Max 3 passes** inside an agent, and **3 attempts per gate** across agents, then Ton decides.
+- **Builder ≠ verifier**: each agent checks itself, then the next gate re-checks (developers → QA → lead).
+- Lessons go to `docs/lessons.md` at the moment of failure; every agent reads it first.
 
-## Skills
-Pipeline: `caffeine-pipeline`, `ios-pipeline`, `android-pipeline`, `loop-engineering`.
-Shared: `caffeine-domain`, `tdd-workflow`, `figma-handoff`, `design-tokens`, `appium-parity`, `fastlane-deployment`.
-iOS: `swift-style`, `mvi-ios`, `swiftdata-patterns`, plus `skills/ios-swiftui-design`. Android: `kotlin-style`, `mvi-android`, `room-patterns`, `compose-craft`.
-Design (existing, unchanged): `skills/designer`, `skills/ios-swiftui-design`.
+## Handoff wires (files)
+brief → `docs/plan/<f>-plan.md` → `docs/design/<f>-spec.md` + `img/` + `<f>-a11y.md` + tokens ∥ `docs/data-model/<f>-model.md` + `<f>-cases.md` → **GATE 1** → code + `docs/pipeline/<p>-status.md` → `docs/review/<f>-qa.md` → `docs/review/<f>-review.md` → `docs/release/<f>-release.md` → **GATE 2**.
+
+Status clock: `docs/status.md` (main), `docs/pipeline/{ios,android}-status.md` (lanes).
+
+## Figma rule
+Only `ux-ui-designer` has Figma tools, including write (`use_figma`, `upload_assets`). Every other agent has none, so the rule is enforced by the agents' tool lists, not by trust. The main session follows the same rule through the conductor. File: https://www.figma.com/design/jVIND6Rm2KzxmEhO6w2b00/Caffeine?node-id=482-29722 (Feature Journeys `482:29722`; builds use v5.1 `446:10036`; navigation from App Prototype `540:21852`).
+
+## Modes
+- **Team**: `/caffeine-pipeline <feature> <ios|android|both>`.
+- **Solo**: `/caffeine-pipeline <feature> ios --solo` → `ba` → (`ux-ui-designer` only for design gaps) → one developer → Ton. A new entity or migration ends solo mode.
 
 ## Open decisions for Ton
 - Android font (SF Pro can't ship on Android): system Roboto by default.
-- Android package `com.tonapps.caffeine`, iOS bundle id `com.tonapps.caffeine` (placeholders until signing is set up).
+- Bundle id / package `com.tonapps.caffeine` are placeholders until signing is set up.
