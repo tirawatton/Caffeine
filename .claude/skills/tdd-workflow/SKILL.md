@@ -16,14 +16,8 @@ Repository rules, Store / ViewModel intent handling, every calculation in `caffe
 ## Do not force TDD on
 Pure layout (a View or Composable with no logic). Check those with previews in Dark and Light against the design spec.
 
-## iOS
-- Tests in `ios-app/Tests/<Feature>Tests/`. Swift Testing (`@Test`, `#expect`) for new tests; XCTest is fine where needed.
-- Store tests: real Store + mock repository; send intents, assert on state. Use `async` tests, never sleeps.
-- Repository tests: in-memory `ModelContainer(isStoredInMemoryOnly: true)`.
-
-## Android
-- Unit tests in `android-app/app/src/test/kotlin/...`; Room tests in `src/androidTest` with `Room.inMemoryDatabaseBuilder`.
-- ViewModel tests: `runTest` + injected `StandardTestDispatcher` + Turbine for flows; never `Thread.sleep`.
+## How to write the tests
+Platform mechanics (frameworks, fakes, in-memory stores, dispatchers, determinism, naming) live in `ios-unit-testing` / `android-unit-testing`; screen-level tests in `ios-ui-testing` / `android-ui-testing`. This skill only sets the rhythm and what must be test-driven.
 
 ## Coverage hand-off
 Each developer lists, in its lane status file, which acceptance criteria its tests cover (`AC-03 -> HomeStoreTests.testOverPace`). qa-engineer fills gaps in its own QA test folders and does not re-test logic already covered.

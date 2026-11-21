@@ -23,10 +23,24 @@ Every agent loads its own skills at startup (`skills:` in its frontmatter; the a
 | `ba` | **ba-planning** (plan template, task/AC rules, readiness checklist, analytics privacy) | caffeine-domain, loop-engineering |
 | `ux-ui-designer` | **designer** (Figma design loop), **figma-handoff** (spec), **design-tokens** (export), **design-accessibility** (a11y check) | caffeine-domain, loop-engineering |
 | `backend-lead` | **data-contract**, **code-review**, swiftdata-patterns, room-patterns, fastlane-deployment | tdd-workflow, caffeine-domain, loop-engineering |
-| `ios-developer` | **swift-style**, **ios-swiftui-design** (SwiftUI), **swiftdata-patterns** (SwiftData), **mvi-ios** | design-tokens, tdd-workflow, caffeine-domain, loop-engineering |
-| `android-developer` | **kotlin-style**, **compose-craft** (Compose), **room-patterns** (Room), **mvi-android** | design-tokens, tdd-workflow, caffeine-domain, loop-engineering |
-| `qa-engineer` | **qa-verification** (battery, report, routing), **appium-parity** | tdd-workflow, caffeine-domain, loop-engineering |
+| `ios-developer` | the 10 developer topics (table below) | design-tokens, caffeine-domain, loop-engineering |
+| `android-developer` | the 10 developer topics (table below) | design-tokens, caffeine-domain, loop-engineering |
+| `qa-engineer` | **qa-verification** (battery, report, routing), **appium-parity**, ios-unit-testing, android-unit-testing | tdd-workflow, caffeine-domain, loop-engineering |
 | main session | **caffeine-pipeline** (conductor) | loop-engineering |
+
+### The 10 developer topics
+| # | Topic | iOS | Android |
+|---|---|---|---|
+| 1 | Persistence | swiftdata-patterns | room-patterns |
+| 2 | Architecture pattern | mvi-ios | mvi-android |
+| 3 | TDD | tdd-workflow | tdd-workflow |
+| 4 | Coding, UI, algorithms | ios-coding-ui-algorithms + swift-style + ios-swiftui-design | android-coding-ui-algorithms + kotlin-style + compose-craft |
+| 5 | App lifecycle | ios-app-lifecycle | android-app-lifecycle |
+| 6 | Concurrency + memory | ios-concurrency-memory | android-concurrency-memory |
+| 7 | Core animation | ios-core-animation | android-core-graphics |
+| 8 | Animation + screen transitions | ios-animation-transitions | android-animation-transitions |
+| 9 | Unit tests | ios-unit-testing | android-unit-testing |
+| 10 | UI tests | ios-ui-testing | android-ui-testing |
 
 ## What was merged and why
 | Before (21) | After | Why |

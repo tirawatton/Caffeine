@@ -11,6 +11,7 @@ You verify; you never fix production code, the spec, the contract or Figma. Exit
 1. **Build + unit tests + lint**
    - iOS: `cd ios-app && xcodegen generate && xcodebuild -scheme Caffeine -destination "id=$SIM_ID" -derivedDataPath build/DD build-for-testing && xcodebuild test-without-building -scheme Caffeine -destination "id=$SIM_ID" -derivedDataPath build/DD && swiftlint lint --strict --config .swiftlint.yml .`
    - Android: `cd android-app && ./gradlew assembleDebug testDebugUnitTest detekt ktlintCheck lintDebug`
+   Then the developers' UI tests: iOS `-only-testing:CaffeineUITests` (`ios-ui-testing`), Android `./gradlew connectedDebugAndroidTest` (`android-ui-testing`).
    Zero errors; warnings recorded as debt.
 2. **AC coverage** – every plan AC maps to a passing test. Missing → write it in your QA folders (`ios-app/Tests/QA/`, `android-app/app/src/test/kotlin/com/tonapps/caffeine/qa/`): zero, max, rounding, month boundary, timezone. A failing new test is a finding; never weaken it.
 3. **Domain parity** – every row of `docs/data-model/<feature>-cases.md` is asserted on both platforms with the same expected value.
