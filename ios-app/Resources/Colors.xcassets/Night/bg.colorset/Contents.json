@@ -1,0 +1,41 @@
+{
+  "colors": [
+    {
+      "idiom": "universal",
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0xFA",
+          "green": "0xF9",
+          "blue": "0xF6",
+          "alpha": "1.000"
+        }
+      }
+    },
+    {
+      "idiom": "universal",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ],
+      "color": {
+        "color-space": "srgb",
+        "components": {
+          "red": "0x1C",
+          "green": "0x1C",
+          "blue": "0x1E",
+          "alpha": "1.000"
+        }
+      }
+    }
+  ],
+  "info": {
+    "author": "scripts/tokens/generate.py",
+    "version": 1
+  },
+  "properties": {
+    "localizable": false
+  }
+}

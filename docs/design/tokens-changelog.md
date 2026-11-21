@@ -2,7 +2,14 @@
 
 Figma `Caffeine / Night` and `Caffeine / Primitives` (file `jVIND6Rm2KzxmEhO6w2b00`). Newest first.
 
-> The token pipeline (`scripts/tokens/`, `docs/design/tokens.json`, the generated iOS colour sets / `DesignTokens.swift` and the Android `Caffeine{Colors,Dimens,Type}.kt`) does not exist yet. It is foundation task T-01. Until then this file is the record of token changes.
+> Since 2026-11-21 the token pipeline exists (foundation T-01): `scripts/tokens/figma-export.json` → `scripts/tokens/generate.py` → `docs/design/tokens.json`, the iOS colour sets (`ios-app/Resources/Colors.xcassets/Night/`) + `DesignTokens.swift`, and the Android `Caffeine{Colors,Dimens,Type}.kt`. Gate: `python3 scripts/tokens/diff.py` must print `0`. This file keeps the human-readable history.
+
+## 2026-11-21 · Token pipeline built (foundation T-01) and DG-52 component sync
+
+- **Generated from Figma** (36 `Caffeine / Night` colours × Dark / Light, 22 `Caffeine / Dimensions`, 15 `iOS/*` + `Data/*` text styles, 3 effect styles). Includes every 21 Nov audit value below: `incomeText` Dark #9EE6C4 / Light #1F714C; Light `accent` #CF3D20; Light `textSecondary` #636366; `onPrimarySoft` `0xE01C1C1E`; `onAccentSoft` Dark `0xE01C1C1E` / Light `0xF5FFFFFF`; `shadow` `0x59000000` / `0x1F000000`.
+- Legacy `hero`, `hero-start`, `hero-end`, `hero-rim`, `hero-text-secondary` are generated as **deprecated** (unused since v5; Ton may delete them in Figma). `Caffeine / Bento` is not exported.
+- Text style weights follow Figma, not the older table in the `design-tokens` skill: `iOS/Subhead` = Medium, `iOS/Caption` = Semibold.
+- **DG-52 (Ton Q-50), DS page only:** 14 secondary labels in **Stat tile** `47:413` (Income / Expense label) and **Wallet card (legacy)** `71:525` (number, label, meta labels) were `text-on-light` at 70% layer opacity (below 4.5:1 on periwinkle); they are now `night/on-primary-soft` at 100%, like the audit fix pass did on screens. Every other main component already carried the audit values (0 texts bound to `night/income`; Picker tile label `68:478` = `on-primary-soft`). Budget hero v5 / Metric hero v5 on Home v5 were checked read-only (clean). No pins or overrides on the Home v5 page.
 
 ## 2026-11-21 · UX/UI audit v5.1 fixes (findings 04, 05, 06, 09)
 

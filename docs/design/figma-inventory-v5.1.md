@@ -1,20 +1,22 @@
 # Figma inventory — v5.1 (read-only export, 21 Nov 2026)
 
 Exported by the main session with a read-only Figma script, because `ba` has no Figma tools.
+**Refreshed by ux-ui-designer on 21 Nov 2026** (foundation run): section A names after the audit fix pass, the replaced household page, new section N (foundation), J / Z moved down 1394pt.
 File `jVIND6Rm2KzxmEhO6w2b00`. Dark frames only (every Dark frame has a Light twin 482pt to the right on the v5.1 page).
 Re-export if the Figma pages change.
 
 ## Page `446:10036` — 🏠 v5.1 — UX journey pass (Dark + Light)
 
 ### A · First run — onboarding, sign in, budget setup, first slip `446:10037`
-- 448:4716 | O6·1 — See what's safe to spend
-- 448:4808 | O6·2 — Share a slip
-- 448:5106 | O6·3 — One wallet for the whole home
+- 448:4716 | O6·1 — See what's safe to spend ("Never run short before payday"; chip "On track for payday")
+- 448:4808 | O6·2 — Scan a slip ("Scan a slip. / We log it."; pill "QR read on this iPhone", Android copy DG-49)
+- 448:5106 | O6·3 — Know every bill before it lands (Fixed costs; pill "Reminder before each charge"; renamed 21 Nov 2026, same node id)
 - 448:5314 | 4 — Sign in (wordmark logo)
 - 446:10038 | O5 Onboarding · Monthly budget (new)
 - 501:28700 | O6 Loading · Brewing (after budget setup → Home)
 - 501:28956 | Notes — O6 Loading v5.1
 - 446:10152 | 1H Home · New user (empty)
+- 614:37371 | (archived) v5.1 — replaced 21 Nov 2026 (shared household is V2.0) · 3 — One wallet for the whole home (y=1154 in section A; not V1.0)
 
 ### B · Log & scan — keypad, scan, batch, review `446:10196`
 - 448:5374 | Add Transaction — Keypad (Expense)
@@ -116,7 +118,16 @@ Re-export if the Figma pages change.
 - 448:30659 | 6B Home Screen widgets
 - 448:30741 | Sync status — states
 
-### J · States boards `448:30763`
+### N · Foundation — splash, store error, privacy shield `620:37505` (y=22483, added 21 Nov 2026)
+Dark / Light pairs (Light = Dark + 482pt):
+- 620:37506 / 620:37602 | F1 Splash (DG-01)
+- 620:37527 / 620:37611 | F2 Store error · STORE-DB-01 (DG-22)
+- 620:37561 / 620:37625 | F3 Store error · Retrying (DG-22)
+- 620:37593 / 620:37639 | F4 Privacy shield (DG-26)
+- 621:37629 | Notes — N Foundation
+Spec: `docs/design/foundation-spec.md`.
+
+### J · States boards `448:30763` (y=23877 since 21 Nov 2026)
 - 448:30764 Wallet I · 448:31108 4F · 448:31210 5H · 448:31268 7E · 448:31386 8K · 448:31560 9O
 
 ### K · Goals `580:31285`
@@ -156,10 +167,10 @@ Re-export if the Figma pages change.
 P1 Batch scan saves in one tap (2C Review list) · P2 Leaner slip review · P3 Labelled Scan slip chip, 1N scan-first grid · P4 Unreadable slip opens keypad (replaces 2B fallback) · P5 O5 budget setup after Sign in; Skip → 1L · P6 Compact Home hero (300pt, no tiles) · P7 No repeated content (4D, 4B Insight entry, 1G, 1J month only)
 
 ### 14 · Open questions (from Figma)
-1. Where does Sync & devices (6A) open from? (13)
+1. Where does Sync & devices (6A) open from? (13) — 6A is now marked V2.0 (not in V1.0)
 2. Is Fixed costs pushed from Wallet, or only from the Home Bills alert? (08)
 3. Where does Tax deductions (9M) live: Analytics, Settings or a Pro hub? (11)
-4. Splash or app-lock screen on launch? (01)
+4. Splash or app-lock screen on launch? (01) — answered by Ton Q-04; splash = N F1, shield = N F4 (lock prompt itself is E06, DG-02)
 5. What does the bell open? (02)
 6. Which deep link does each widget open? (13)
 7. History Duplicate and Edit: open 2A or 2B, which mode? (10)
@@ -167,4 +178,4 @@ P1 Batch scan saves in one tap (2C Review list) · P2 Leaner slip review · P3 L
 9. Settings › Categories & Tags: reuse 2E Category sheet or separate screen? (04, 12)
 
 ### 14 · Screens not designed (21)
-01 Launch / splash · 01 Face ID / passcode lock · 02 Notifications list · 03 Settings › Saved Favorites · 04 Add account form · 04 Edit / reorder category · 07 Net worth detail · 07 Manage accounts · Archived · 07 Reconnect account · 08 Payoff calculator · 08 Add subscription form · 10 Keypad pre-filled copy (Duplicate) · 10 Details edit mode · 11 Pro paywall · 12 Primary Currency · 12 Default Accounts & Slip Mapping · 12 App Lock / Privacy / Help / Legal · 13 Sync & devices entry point · 13 Invite flow · 13 Import Money Manager backup · 13 Widget deep links
+~~01 Launch / splash~~ (designed: N F1) · 01 Face ID / passcode lock · 02 Notifications list · 03 Settings › Saved Favorites · 04 Add account form · 04 Edit / reorder category · 07 Net worth detail · 07 Manage accounts · Archived · 07 Reconnect account · 08 Payoff calculator · 08 Add subscription form · 10 Keypad pre-filled copy (Duplicate) · 10 Details edit mode · 11 Pro paywall · 12 Primary Currency · 12 Default Accounts & Slip Mapping · 12 App Lock / Privacy / Help / Legal · 13 Sync & devices entry point · 13 Invite flow · 13 Import Money Manager backup · 13 Widget deep links
