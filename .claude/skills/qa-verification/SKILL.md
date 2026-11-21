@@ -18,10 +18,12 @@ You verify; you never fix production code, the spec, the contract or Figma. Exit
 4. **E2E parity** – one shared Appium + Pytest test per user-facing AC in `qa-automation/` (rules in `appium-parity`): Page Objects, accessibility ids only, no XPath. A missing id is CRITICAL for that platform. Single-platform or solo scope → parity N/A.
 5. **Visual** – install and launch (iOS 18 + latest; API 28 + latest), screenshot each new screen in Dark and Light into `docs/review/img/<feature>/{ios,android}/`, compare with `docs/design/img/<feature>/`: layout, copy, amount colours and signs, every state.
 
+6. **Security (MASTG, `security-standard` §7)** – on a debug build of each platform: pull the app container / data dir and confirm the store is encrypted (iOS `complete` protection, Android SQLCipher not readable as SQLite) and Restricted columns are ciphertext; grep the container, logs (`log stream` / `logcat`) and backups for the test data's amounts, notes and tokens (must find none); intercept with a proxy certificate and confirm pinning blocks it; check the recents snapshot is covered; run the platform checks in `ios-security` §8 / `android-security` §8. Any finding → owner is that platform's developer (or backend-lead for contract/crypto design).
+
 Missing tool (simulator, emulator, Appium server) → "unverified: <reason>" for that step; never set `QA_PASSED` over it.
 
 ## Report: `docs/review/<feature>-qa.md` (+ `-qa.html` from Pytest)
-Matrix: AC → unit test → E2E test → iOS → Android → screenshot match. Then test counts per platform, AC coverage N/N, cases parity N/N, lint debt.
+Matrix: AC → unit test → E2E test → iOS → Android → screenshot match, plus a security table: §7 item → iOS → Android → evidence. Then test counts per platform, AC coverage N/N, cases parity N/N, lint debt.
 
 ## Routing failures (append a lesson first, then `BLOCKED` with the owner)
 | Failure | Owner |

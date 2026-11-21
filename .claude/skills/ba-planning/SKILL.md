@@ -1,6 +1,6 @@
 ---
 name: ba-planning
-description: How the Caffeine BA writes a developer-ready feature plan - the plan template (need, scope, flow, tasks, Given/When/Then acceptance criteria, screen map, analytics, open questions), task splitting rules, the analytics privacy rules and the 8-point readiness checklist that must pass before PLAN_READY. Loaded by ba.
+description: How the Caffeine BA writes a developer-ready feature plan - the plan template (need, scope, flow, tasks, Given/When/Then acceptance criteria, screen map, analytics, open questions), task splitting rules, the analytics privacy rules and the 9-point readiness checklist that must pass before PLAN_READY. Loaded by ba.
 ---
 
 # BA Planning
@@ -29,7 +29,8 @@ Start the file with the Readiness checklist (below) as numbered PASS/FAIL lines,
 6. **Screen map** – screen state → Feature Journeys step code (H1, 2A, 10B…) → v5.1 Dark / Light node ids (from CLAUDE.md). A state with no frame = **Design gap** (ux-ui-designer designs it).
 7. **Analytics** (only if the brief has a KPI) – KPI → metric → events: `snake_case` name, trigger = screen id + intent, properties with allowed values, identical on iOS and Android.
    **Forbidden properties:** amounts, balances, notes, merchant, account numbers, names, slip data. Buckets (`amount_bucket: "0-500"`) only if Ton approves. No KPI → write "N/A — no KPI".
-8. **Open questions** – max 3, the most important.
+8. **Security** – for each task that creates, shows, stores, sends or exports user data: the data it touches with its class (`security-standard` §2) and at least one security AC (e.g. "Given Privacy Mode is on, When Home opens, Then every amount shows ฿••••••"; "Given a note is saved, When the database file is read, Then the note is ciphertext").
+9. **Open questions** – max 3, the most important.
 
 ## Readiness checklist (any miss = fix and re-check all)
 1. Every task has all 8 fields filled.
@@ -40,11 +41,12 @@ Start the file with the Readiness checklist (below) as numbered PASS/FAIL lines,
 6. Every number agrees with `caffeine-domain`.
 7. Every screen state maps to a journey step or is listed as a Design gap.
 8. Analytics has no forbidden property, or says "N/A — no KPI".
+9. Every task touching user data names its data classes and has a security AC.
 
 Judgment only after all 8 pass: is each task atomic, is scope right for the priority.
 
 ## Feedback runs (`PLAN_RETURNED`)
-Fix only the listed items, re-run all 8 checks, set `PLAN_READY` again.
+Fix only the listed items, re-run all 9 checks, set `PLAN_READY` again.
 
 ## Brief missing
 Return the questions in `docs/briefs/TEMPLATE-brief.md` to Ton, max 3 at once.

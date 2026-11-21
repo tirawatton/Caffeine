@@ -8,7 +8,7 @@ Refactored on 21 Nov 2026 from 21 stage agents into **6 role agents + Ton**, one
 | Product Owner & CEO | **Ton** | Why and when: brief, design approval, production release, open questions | `docs/briefs/` | human |
 | BA | `ba` | The plan: need, scope, flow, tasks, Given/When/Then ACs, screen map, analytics events | `docs/plan/`, `docs/analytics/` | opus |
 | UX/UI Designer | `ux-ui-designer` | The design: **Figma (only writer)**, spec, accessibility check, design tokens | Figma file, `docs/design/`, generated token files, `scripts/tokens/` | opus |
-| Backend Engineer, Team Lead | `backend-lead` | Technical integrity: contract before build; review + beta after QA; `backend/` in Phase 2 | `docs/data-model/`, `docs/review/<f>-review.md`, `docs/release/`, `backend/` | opus |
+| Backend Engineer, Team Lead | `backend-lead` | Technical integrity: contract (data, API, security threat model) before build; review + beta after QA; `backend/` in Phase 2 | `docs/data-model/`, `docs/api/`, `docs/security/`, `docs/review/<f>-review.md`, `docs/release/`, `backend/` | opus |
 | iOS Developer | `ios-developer` | The iOS app, data to screens, test-first | `ios-app/` (except token files and `Tests/QA/`), `docs/pipeline/ios-status.md` | sonnet |
 | Android Developer | `android-developer` | The Android app, data to screens, test-first | `android-app/` (except token files and `.../qa/` tests), `docs/pipeline/android-status.md` | sonnet |
 | QA Engineer | `qa-engineer` | Independent verification of both apps | `qa-automation/`, QA test folders, `docs/review/<f>-qa.*` | sonnet |
@@ -20,15 +20,15 @@ Every agent loads its own skills at startup (`skills:` in its frontmatter; the a
 
 | Agent | Its own skills | Shared skills |
 |---|---|---|
-| `ba` | **ba-planning** (plan template, task/AC rules, readiness checklist, analytics privacy) | caffeine-domain, loop-engineering |
+| `ba` | **ba-planning** (plan template, task/AC rules, readiness checklist, analytics privacy) | security-standard, caffeine-domain, loop-engineering |
 | `ux-ui-designer` | **designer** (Figma design loop), **figma-handoff** (spec), **design-tokens** (export), **design-accessibility** (a11y check) | caffeine-domain, loop-engineering |
-| `backend-lead` | **data-contract**, **code-review**, swiftdata-patterns, room-patterns, fastlane-deployment | tdd-workflow, caffeine-domain, loop-engineering |
-| `ios-developer` | the 10 developer topics (table below) | design-tokens, caffeine-domain, loop-engineering |
-| `android-developer` | the 10 developer topics (table below) | design-tokens, caffeine-domain, loop-engineering |
-| `qa-engineer` | **qa-verification** (battery, report, routing), **appium-parity**, ios-unit-testing, android-unit-testing | tdd-workflow, caffeine-domain, loop-engineering |
+| `backend-lead` | **data-contract**, **api-contract**, **backend-security**, **code-review**, swiftdata-patterns, room-patterns, fastlane-deployment | security-standard, tdd-workflow, caffeine-domain, loop-engineering |
+| `ios-developer` | the 12 developer topics (table below) | security-standard, api-contract, design-tokens, caffeine-domain, loop-engineering |
+| `android-developer` | the 12 developer topics (table below) | security-standard, api-contract, design-tokens, caffeine-domain, loop-engineering |
+| `qa-engineer` | **qa-verification** (battery incl. security, report, routing), **appium-parity**, ios-/android-security, ios-/android-unit-testing | security-standard, tdd-workflow, caffeine-domain, loop-engineering |
 | main session | **caffeine-pipeline** (conductor) | loop-engineering |
 
-### The 10 developer topics
+### The 12 developer topics
 | # | Topic | iOS | Android |
 |---|---|---|---|
 | 1 | Persistence | swiftdata-patterns | room-patterns |
@@ -41,6 +41,11 @@ Every agent loads its own skills at startup (`skills:` in its frontmatter; the a
 | 8 | Animation + screen transitions | ios-animation-transitions | android-animation-transitions |
 | 9 | Unit tests | ios-unit-testing | android-unit-testing |
 | 10 | UI tests | ios-ui-testing | android-ui-testing |
+| 11 | Networking + API integration | ios-networking + api-contract | android-networking + api-contract |
+| 12 | **Security + data protection** | ios-security + security-standard | android-security + security-standard |
+
+### Security across the team (ISO/IEC 27001/27002:2022, OWASP MASVS L2, PDPA)
+One standard, `security-standard`, applies everywhere: every field is classified; all data is encrypted at rest (store level on every platform, plus AES-256-GCM field encryption for Restricted data), in transit (TLS 1.3 + pinning) and in backups; keys live in Keychain/Secure Enclave, Android Keystore/StrongBox or cloud KMS; Restricted data is end-to-end encrypted before sync, so the backend stores only ciphertext. It is checked at every step: **ba** writes a security AC per data task → **backend-lead** classifies fields and writes the threat model → **developers** implement `ios-security` / `android-security` → **qa-engineer** runs MASTG checks (step 6) → **backend-lead** runs security greps and the §7 checklist in review → `backend-security` governs the Phase 2 server.
 
 ## What was merged and why
 | Before (21) | After | Why |
