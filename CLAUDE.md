@@ -11,7 +11,7 @@ This file orients Claude (or any agent) working on the **Caffeine** personal fin
 
 ## Workflow — the loop
 
-All design and implementation work runs as a loop, not a straight line. Both skills in `skills/` (`designer` → `ios-swiftui-design`) follow it:
+All design and implementation work runs as a loop, not a straight line. Both skills, now in `.claude/skills/` (`designer` → `ios-swiftui-design`), follow it:
 
 ```
 Start -> Set Goal -> Reason -> Verify -> Pass? --YES--> Exit loop
@@ -38,7 +38,7 @@ The app is built by Claude Code agents in this repo, adapted from `myproject/caf
 - **Connections:** the main session runs `/caffeine-pipeline` and is the only place agents are started (subagents cannot start subagents). Agents hand off through files in `docs/` and status files (`docs/status.md`, `docs/pipeline/{ios,android}-status.md`).
 - **Loop:** every agent runs Set Goal → Reason → Verify → Fix on its own output, and the next gate re-verifies (builder ≠ verifier). Gates are mechanical first (build, tests, lint, greps, contrast, token diff). **3 attempts per gate**, then stop and ask Ton. Failures go to `docs/lessons.md` at the moment they are found; every agent reads it first.
 - **Figma: only `ux-ui-designer` may change it.** It is the only agent with Figma tools (including `use_figma`); every other agent builds from `docs/design/<feature>-spec.md` and its screenshots, and the main session routes Figma changes to it. Sources: v5.1 page `446:10036`, Feature Journeys `482:29722` (https://www.figma.com/design/jVIND6Rm2KzxmEhO6w2b00/Caffeine?node-id=482-29722), App Prototype `540:21852`.
-- **Agents:** `.claude/agents/` (6). **Skills:** `.claude/skills/` (15) plus `skills/designer` (run by `ux-ui-designer`) and `skills/ios-swiftui-design` (read by `ios-developer`).
+- **Agents and their skills** (`.claude/agents/`, each loads its own skills at startup via the `skills:` frontmatter; all 21 skills live in `.claude/skills/`): `ba` → ba-planning · `ux-ui-designer` → designer, figma-handoff, design-tokens, design-accessibility · `backend-lead` → data-contract, code-review, swiftdata-patterns, room-patterns, fastlane-deployment · `ios-developer` → swift-style, ios-swiftui-design (SwiftUI), swiftdata-patterns (SwiftData), mvi-ios · `android-developer` → kotlin-style, compose-craft, room-patterns, mvi-android · `qa-engineer` → qa-verification, appium-parity. Shared: caffeine-domain + loop-engineering (all), tdd-workflow (lead, developers, QA), design-tokens (developers). Conductor: caffeine-pipeline (main session).
 - **Open (Ton):** Android font (SF Pro can't ship on Android; Roboto by default); bundle id / package `com.tonapps.caffeine` are placeholders until signing is set up; app icon not chosen, so the iOS build has no AppIcon set.
 
 ## Design rules (apply to every new screen/component)

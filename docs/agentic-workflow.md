@@ -15,6 +15,19 @@ Refactored on 21 Nov 2026 from 21 stage agents into **6 role agents + Ton**, one
 
 Conductor: the `/caffeine-pipeline` skill in the main session (agents can't start agents). It starts agents and routes Feedback; it does no agent's work and never edits Figma.
 
+## Each agent's skills
+Every agent loads its own skills at startup (`skills:` in its frontmatter; the agent file also lists them, so it can read them by hand if preloading is off). Procedures live in the skills; agent files hold only the role, the handoff contract and the loop.
+
+| Agent | Its own skills | Shared skills |
+|---|---|---|
+| `ba` | **ba-planning** (plan template, task/AC rules, readiness checklist, analytics privacy) | caffeine-domain, loop-engineering |
+| `ux-ui-designer` | **designer** (Figma design loop), **figma-handoff** (spec), **design-tokens** (export), **design-accessibility** (a11y check) | caffeine-domain, loop-engineering |
+| `backend-lead` | **data-contract**, **code-review**, swiftdata-patterns, room-patterns, fastlane-deployment | tdd-workflow, caffeine-domain, loop-engineering |
+| `ios-developer` | **swift-style**, **ios-swiftui-design** (SwiftUI), **swiftdata-patterns** (SwiftData), **mvi-ios** | design-tokens, tdd-workflow, caffeine-domain, loop-engineering |
+| `android-developer` | **kotlin-style**, **compose-craft** (Compose), **room-patterns** (Room), **mvi-android** | design-tokens, tdd-workflow, caffeine-domain, loop-engineering |
+| `qa-engineer` | **qa-verification** (battery, report, routing), **appium-parity** | tdd-workflow, caffeine-domain, loop-engineering |
+| main session | **caffeine-pipeline** (conductor) | loop-engineering |
+
 ## What was merged and why
 | Before (21) | After | Why |
 |---|---|---|
